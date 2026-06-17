@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="img/logo.png" type="image/png" />
-<link rel="shortcut icon" href="img/logo.png" type="image/png" />
+    <link rel="shortcut icon" href="img/logo.png" type="image/png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Вязьма — туристический портал</title>
 
@@ -288,6 +288,18 @@
         footer span {
             color: #f7d44a;
         }
+        .footer-link {
+            color: #f7d44a;
+            font-weight: 700;
+            text-decoration: none;
+            border-bottom: 1px dashed #f7d44a;
+            padding-bottom: 2px;
+            transition: 0.3s;
+        }
+        .footer-link:hover {
+            color: #ffe074;
+            border-bottom-color: #ffe074;
+        }
 
         /* ===== АДАПТИВ ===== */
         @media (max-width: 768px) {
@@ -469,13 +481,19 @@
         </div>
     </section>
 
-    <!-- ===== ФУТЕР ===== -->
+    <!-- ===== ФУТЕР (ГОТОВЫЙ) ===== -->
     <footer>
         <div class="container">
             <p>
                 © 2026 Туристический портал Вязьмы. Сделано с ❤️ для путешественников.
                 <br />
                 <span>#ОткройВязьму</span>
+            </p>
+            <p style="margin-top: 12px; font-size: 0.9rem; opacity: 0.8;">
+                Сделано в 
+                <a href="https://vk.com/kvantorium_vyazma" target="_blank" class="footer-link">
+                    Кванториуме Вязьмы
+                </a>
             </p>
         </div>
     </footer>
