@@ -2,15 +2,29 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Вязьма — туристический портал</title>
-    <link rel="icon" href="img/logo.ico" type="image/x-icon" />
-    <link rel="shortcut icon" href="img/logo.ico" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Вязьма — туристический портал города</title>
+
+    <!-- ===== SEO ТЕГИ ДЛЯ ПОИСКА ===== -->
+    <meta name="description" content="Туристический портал Вязьмы: история города, маршруты, достопримечательности, интерактивная карта. Всё о городе Вязьма Смоленской области." />
+    <meta name="keywords" content="Вязьма, город Вязьма, Вязьма Смоленская область, туризм Вязьма, достопримечательности Вязьмы, маршруты Вязьма, что посмотреть в Вязьме, история Вязьмы, путеводитель Вязьма" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://VisitVyazma.github.io/" />
+
+    <!-- ===== ИКОНКА САЙТА ===== -->
     <link rel="icon" href="img/logo.png" type="image/png" />
+    <link rel="shortcut icon" href="img/logo.png" type="image/png" />
+    <link rel="apple-touch-icon" href="img/logo.png" />
+
+    <!-- ===== ПОДКЛЮЧАЕМ КАРТУ ===== -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
@@ -180,11 +194,14 @@
             border-radius: 20px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.12);
             padding: 16px;
+            position: relative;
+            touch-action: pan-x pan-y;
         }
         #map {
             width: 100%;
             height: 550px;
             border-radius: 12px;
+            touch-action: pan-x pan-y;
         }
         .map-controls {
             display: flex;
@@ -250,8 +267,20 @@
             header .container { flex-direction: column; gap: 10px; }
             nav a { margin: 0 12px; font-size: 0.9rem; }
             .section-title { font-size: 1.8rem; }
-            #map { height: 350px; }
+            #map {
+                height: 400px;
+                touch-action: pan-x pan-y;
+            }
+            .map-wrapper {
+                padding: 10px;
+            }
             .map-controls button { padding: 6px 14px; font-size: 0.8rem; }
+            .container { padding: 0 12px; }
+        }
+        @media (max-width: 480px) {
+            #map {
+                height: 320px;
+            }
         }
     </style>
 </head>
@@ -288,21 +317,21 @@
             <h2 class="section-title">История города</h2>
             <div class="history-grid">
                 <div class="history-card">
-                    <img src="img/history-1.jpg" alt="Крепостные валы" />
+                    <img src="img/history-1.jpg" alt="Крепостные валы Вязьмы" />
                     <div class="content">
                         <h3>XII–XV века: Основание</h3>
                         <p>Вязьма впервые упоминается в летописях в 1239 году. Город возник как пограничная крепость на торговом пути «из варяг в греки».</p>
                     </div>
                 </div>
                 <div class="history-card">
-                    <img src="img/history-2.jpg" alt="Война 1812 года" />
+                    <img src="img/history-2.jpg" alt="Война 1812 года в Вязьме" />
                     <div class="content">
                         <h3>1812 год: Отечественная война</h3>
                         <p>Вязьма стала ареной ожесточённых сражений. Русские войска нанесли серьёзный урон отступающей армии Наполеона.</p>
                     </div>
                 </div>
                 <div class="history-card">
-                    <img src="img/history-3.jpg" alt="Великая Отечественная война" />
+                    <img src="img/history-3.jpg" alt="Великая Отечественная война в Вязьме" />
                     <div class="content">
                         <h3>1941–1945: Город воинской славы</h3>
                         <p>Вязьма была оккупирована фашистами, но партизанское движение не прекращалось. В 2009 году городу присвоено звание «Город воинской славы».</p>
@@ -317,7 +346,7 @@
             <h2 class="section-title">Туристические маршруты</h2>
             <div class="routes-grid">
                 <div class="route-item" data-route="museums">
-                    <img src="img/route-1.jpg" alt="Музеи" />
+                    <img src="img/route-1.jpg" alt="Музеи Вязьмы" />
                     <div class="info">
                         <h4>🏛️ Музеи</h4>
                         <p>Краеведческий музей, музей купеческого быта, музей военной истории</p>
@@ -326,7 +355,7 @@
                     </div>
                 </div>
                 <div class="route-item" data-route="parks">
-                    <img src="img/route-2.jpg" alt="Парки" />
+                    <img src="img/route-2.jpg" alt="Парки Вязьмы" />
                     <div class="info">
                         <h4>🌳 Парки</h4>
                         <p>Парк «Зелёный остров», набережная реки Вязьмы, скверы в центре города</p>
@@ -335,7 +364,7 @@
                     </div>
                 </div>
                 <div class="route-item" data-route="monuments">
-                    <img src="img/route-3.jpg" alt="Памятники" />
+                    <img src="img/route-3.jpg" alt="Памятники Вязьмы" />
                     <div class="info">
                         <h4>🎖️ Памятники</h4>
                         <p>Памятник 1812 года, Вечный огонь, мемориал воинской славы</p>
@@ -344,7 +373,7 @@
                     </div>
                 </div>
                 <div class="route-item" data-route="all">
-                    <img src="img/route-4.jpg" alt="Все достопримечательности" />
+                    <img src="img/route-4.jpg" alt="Все достопримечательности Вязьмы" />
                     <div class="info">
                         <h4>📍 Все достопримечательности</h4>
                         <p>Полный маршрут по всем знаковым местам Вязьмы</p>
@@ -358,7 +387,7 @@
 
     <section id="map-section">
         <div class="container">
-            <h2 class="section-title">🗺️ Интерактивная карта</h2>
+            <h2 class="section-title">🗺️ Интерактивная карта Вязьмы</h2>
             <div class="map-wrapper">
                 <div class="map-controls">
                     <button class="reset-btn active" data-route="all">📍 Все</button>
@@ -391,7 +420,11 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
-            const map = L.map('map').setView([55.2100, 34.2950], 14);
+            const map = L.map('map', {
+                touchZoom: true,
+                scrollWheelZoom: true,
+                zoomControl: true
+            }).setView([55.2100, 34.2950], 14);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap',
@@ -500,7 +533,7 @@
                     const route = e.routes[0];
                     const summary = route.summary;
                     const totalDistance = (summary.totalDistance / 1000).toFixed(1);
-                    const totalTime = totalDistance * 18; // ← ТВОЯ ФОРМУЛА: расстояние * 6 * 3
+                    const totalTime = totalDistance * 18;
 
                     const bounds = L.latLngBounds(route.coordinates);
                     map.fitBounds(bounds, { padding: [40, 40] });
@@ -554,6 +587,10 @@
             });
 
             buildRoute('all');
+
+            setTimeout(function() {
+                map.invalidateSize();
+            }, 500);
 
         });
     </script>
