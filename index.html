@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Вязьма — туристический портал города</title>
 
-    <!-- ===== SEO ТЕГИ ДЛЯ ПОИСКА ===== -->
+    <!-- ===== SEO ТЕГИ ===== -->
     <meta name="description" content="Туристический портал Вязьмы: история города, маршруты, достопримечательности, интерактивная карта. Всё о городе Вязьма Смоленской области." />
     <meta name="keywords" content="Вязьма, город Вязьма, Вязьма Смоленская область, туризм Вязьма, достопримечательности Вязьмы, маршруты Вязьма, что посмотреть в Вязьме, история Вязьмы, путеводитель Вязьма" />
     <meta name="robots" content="index, follow" />
@@ -16,10 +16,10 @@
     <link rel="shortcut icon" href="img/logo.png" type="image/png" />
     <link rel="apple-touch-icon" href="img/logo.png" />
 
-    <!-- ===== ПОДКЛЮЧАЕМ КАРТУ ===== -->
+    <!-- ===== ПОДКЛЮЧАЕМ КАРТУ (CSS + JS) ===== -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
     <style>
@@ -201,6 +201,7 @@
             width: 100%;
             height: 550px;
             border-radius: 12px;
+            background: #e5e5e5;
             touch-action: pan-x pan-y;
         }
         .map-controls {
@@ -271,16 +272,12 @@
                 height: 400px;
                 touch-action: pan-x pan-y;
             }
-            .map-wrapper {
-                padding: 10px;
-            }
+            .map-wrapper { padding: 10px; }
             .map-controls button { padding: 6px 14px; font-size: 0.8rem; }
             .container { padding: 0 12px; }
         }
         @media (max-width: 480px) {
-            #map {
-                height: 320px;
-            }
+            #map { height: 320px; }
         }
     </style>
 </head>
@@ -420,7 +417,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
-            const map = L.map('map', {
+            var map = L.map('map', {
                 touchZoom: true,
                 scrollWheelZoom: true,
                 zoomControl: true
@@ -431,9 +428,9 @@
                 maxZoom: 19
             }).addTo(map);
 
-            const startPoint = [55.2100, 34.2950];
+            var startPoint = [55.2100, 34.2950];
 
-            const routeData = {
+            var routeData = {
                 museums: {
                     name: 'Музеи',
                     color: '#D4A017',
@@ -484,12 +481,12 @@
                 }
             };
 
-            let currentRoute = null;
-            let currentMarkers = [];
-            let tipElement = document.querySelector('.map-tip');
+            var currentRoute = null;
+            var currentMarkers = [];
+            var tipElement = document.querySelector('.map-tip');
 
             function clearMarkers() {
-                currentMarkers.forEach(m => map.removeLayer(m));
+                currentMarkers.forEach(function(m) { map.removeLayer(m); });
                 currentMarkers = [];
             }
 
@@ -497,8 +494,8 @@
                 if (minutes < 60) {
                     return Math.round(minutes) + ' мин';
                 } else {
-                    const hours = Math.floor(minutes / 60);
-                    const mins = Math.round(minutes % 60);
+                    var hours = Math.floor(minutes / 60);
+                    var mins = Math.round(minutes % 60);
                     return hours + ' ч ' + mins + ' мин';
                 }
             }
@@ -510,13 +507,17 @@
                 }
                 clearMarkers();
 
-                const data = routeData[routeKey];
+                var data = routeData[routeKey];
                 if (!data) return;
 
-                const points = [startPoint, ...data.places.map(p => p.coords), startPoint];
+                var points = [startPoint];
+                for (var i = 0; i < data.places.length; i++) {
+                    points.push(data.places[i].coords);
+                }
+                points.push(startPoint);
 
-                const router = L.Routing.control({
-                    waypoints: points.map(p => L.latLng(p[0], p[1])),
+                var router = L.Routing.control({
+                    waypoints: points.map(function(p) { return L.latLng(p[0], p[1]); }),
                     routeWhileDragging: false,
                     show: false,
                     lineOptions: {
@@ -530,22 +531,22 @@
                 });
 
                 router.on('routesfound', function(e) {
-                    const route = e.routes[0];
-                    const summary = route.summary;
-                    const totalDistance = (summary.totalDistance / 1000).toFixed(1);
-                    const totalTime = totalDistance * 18;
+                    var route = e.routes[0];
+                    var summary = route.summary;
+                    var totalDistance = (summary.totalDistance / 1000).toFixed(1);
+                    var totalTime = totalDistance * 18;
 
-                    const bounds = L.latLngBounds(route.coordinates);
+                    var bounds = L.latLngBounds(route.coordinates);
                     map.fitBounds(bounds, { padding: [40, 40] });
 
-                    const routeNames = {
+                    var routeNames = {
                         museums: 'по музеям',
                         parks: 'по паркам',
                         monuments: 'по памятникам',
                         all: 'по всем достопримечательностям'
                     };
 
-                    tipElement.textContent = `🚶 Маршрут ${routeNames[routeKey]} • ${totalDistance} км • ${formatTime(totalTime)}`;
+                    tipElement.textContent = '🚶 Маршрут ' + routeNames[routeKey] + ' • ' + totalDistance + ' км • ' + formatTime(totalTime);
                 });
 
                 router.on('routingerror', function() {
@@ -555,36 +556,46 @@
                 currentRoute = router;
                 router.addTo(map);
 
-                data.places.forEach(p => {
-                    const marker = L.marker(p.coords).addTo(map);
-                    marker.bindPopup(`<strong>${p.name}</strong>`);
+                for (var j = 0; j < data.places.length; j++) {
+                    var p = data.places[j];
+                    var marker = L.marker(p.coords).addTo(map);
+                    marker.bindPopup('<strong>' + p.name + '</strong>');
                     currentMarkers.push(marker);
-                });
+                }
             }
 
-            document.querySelectorAll('.map-controls button[data-route]').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.map-controls button[data-route]').forEach(b => b.classList.remove('active'));
+            var buttons = document.querySelectorAll('.map-controls button[data-route]');
+            for (var k = 0; k < buttons.length; k++) {
+                buttons[k].addEventListener('click', function() {
+                    var btns = document.querySelectorAll('.map-controls button[data-route]');
+                    for (var b = 0; b < btns.length; b++) {
+                        btns[b].classList.remove('active');
+                    }
                     this.classList.add('active');
                     buildRoute(this.dataset.route);
                 });
-            });
+            }
 
-            document.querySelectorAll('.route-item').forEach(item => {
-                const routeKey = item.dataset.route;
-                const showBtn = item.querySelector('.show-on-map');
-                if (showBtn) {
-                    showBtn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        document.querySelector(`.map-controls button[data-route="${routeKey}"]`)?.click();
+            var items = document.querySelectorAll('.route-item');
+            for (var m = 0; m < items.length; m++) {
+                (function(item) {
+                    var routeKey = item.dataset.route;
+                    var showBtn = item.querySelector('.show-on-map');
+                    if (showBtn) {
+                        showBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            var btn = document.querySelector('.map-controls button[data-route="' + routeKey + '"]');
+                            if (btn) btn.click();
+                            document.getElementById('map-section').scrollIntoView({ behavior: 'smooth' });
+                        });
+                    }
+                    item.addEventListener('click', function() {
+                        var btn = document.querySelector('.map-controls button[data-route="' + routeKey + '"]');
+                        if (btn) btn.click();
                         document.getElementById('map-section').scrollIntoView({ behavior: 'smooth' });
                     });
-                }
-                item.addEventListener('click', function() {
-                    document.querySelector(`.map-controls button[data-route="${routeKey}"]`)?.click();
-                    document.getElementById('map-section').scrollIntoView({ behavior: 'smooth' });
-                });
-            });
+                })(items[m]);
+            }
 
             buildRoute('all');
 
