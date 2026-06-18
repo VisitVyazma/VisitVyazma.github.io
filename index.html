@@ -3,24 +3,18 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Вязьма — туристический портал города</title>
+    <title>Вязьма — туристический портал</title>
 
     <!-- ===== SEO ТЕГИ ===== -->
-    <meta name="description" content="Туристический портал Вязьмы: история города, маршруты, достопримечательности, интерактивная карта. Всё о городе Вязьма Смоленской области." />
-    <meta name="keywords" content="Вязьма, город Вязьма, Вязьма Смоленская область, туризм Вязьма, достопримечательности Вязьмы, маршруты Вязьма, что посмотреть в Вязьме, история Вязьмы, путеводитель Вязьма" />
+    <meta name="description" content="Туристический портал Вязьмы: история города, маршруты, достопримечательности с адресами." />
+    <meta name="keywords" content="Вязьма, город Вязьма, Вязьма Смоленская область, туризм Вязьма, достопримечательности Вязьмы, маршруты Вязьма, что посмотреть в Вязьме" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://VisitVyazma.github.io/" />
 
-    <!-- ===== ИКОНКА САЙТА ===== -->
+    <!-- ===== ИКОНКА ===== -->
     <link rel="icon" href="img/logo.png" type="image/png" />
     <link rel="shortcut icon" href="img/logo.png" type="image/png" />
     <link rel="apple-touch-icon" href="img/logo.png" />
-
-    <!-- ===== ПОДКЛЮЧАЕМ КАРТУ (CSS + JS) ===== -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
-    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -142,6 +136,8 @@
         }
         .history-card .content { padding: 20px; }
         .history-card h3 { color: #1e3a5f; margin-bottom: 8px; }
+
+        /* ===== МАРШРУТЫ (карточки) ===== */
         .routes-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -154,7 +150,6 @@
             overflow: hidden;
             box-shadow: 0 6px 18px rgba(0,0,0,0.07);
             transition: 0.3s;
-            cursor: pointer;
             border: 3px solid transparent;
         }
         .route-item:hover {
@@ -189,60 +184,57 @@
             transition: 0.3s;
         }
         .route-item .show-on-map:hover { background: #2a4f7a; }
+
+        /* ===== ОПИСАНИЕ ДОСТОПРИМЕЧАТЕЛЬНОСТЕЙ ===== */
+        .attractions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        .attraction-card {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.07);
+            transition: 0.3s;
+        }
+        .attraction-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 14px 34px rgba(0,0,0,0.12);
+        }
+        .attraction-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .attraction-card .info { padding: 20px; }
+        .attraction-card h4 { color: #1e3a5f; margin-bottom: 4px; font-size: 1.2rem; }
+        .attraction-card .address {
+            font-size: 0.9rem;
+            color: #3a6346;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .attraction-card p { color: #2a4533; font-size: 0.95rem; }
+
         .map-wrapper {
             background: #fff;
             border-radius: 20px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.12);
             padding: 16px;
-            position: relative;
-            touch-action: pan-x pan-y;
-        }
-        #map {
-            width: 100%;
-            height: 550px;
-            border-radius: 12px;
-            background: #e5e5e5;
-            touch-action: pan-x pan-y;
-        }
-        .map-controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 16px;
-            justify-content: center;
-        }
-        .map-controls button {
-            padding: 8px 20px;
-            border: none;
-            border-radius: 30px;
-            background: #e8e4dc;
-            color: #1e3a5f;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-            font-size: 0.9rem;
-        }
-        .map-controls button:hover {
-            background: #d4cec2;
-            transform: scale(1.03);
-        }
-        .map-controls button.active {
-            background: #1e3a5f;
-            color: #f7d44a;
-            box-shadow: 0 4px 12px rgba(30,58,95,0.4);
-        }
-        .map-controls button.reset-btn {
-            background: #f7d44a;
-            color: #1e3a5f;
-        }
-        .map-controls button.reset-btn:hover { background: #ffe074; }
-        .map-tip {
             text-align: center;
-            margin-top: 14px;
-            font-size: 0.9rem;
-            color: #555;
-            min-height: 28px;
         }
+        .map-placeholder {
+            padding: 40px 20px;
+            background: #e8f0e3;
+            border-radius: 12px;
+            color: #1d3b2a;
+            font-size: 1.1rem;
+        }
+        .map-placeholder .icon { font-size: 3rem; margin-bottom: 12px; }
+
         footer {
             background: #1e3a5f;
             color: #ccc;
@@ -268,16 +260,11 @@
             header .container { flex-direction: column; gap: 10px; }
             nav a { margin: 0 12px; font-size: 0.9rem; }
             .section-title { font-size: 1.8rem; }
-            #map {
-                height: 400px;
-                touch-action: pan-x pan-y;
-            }
-            .map-wrapper { padding: 10px; }
-            .map-controls button { padding: 6px 14px; font-size: 0.8rem; }
-            .container { padding: 0 12px; }
+            .attractions-grid { grid-template-columns: 1fr; }
+            .routes-grid { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 480px) {
-            #map { height: 320px; }
+            .routes-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -292,11 +279,12 @@
             <nav>
                 <a href="#history">История</a>
                 <a href="#routes">Маршруты</a>
-                <a href="#map-section">Карта</a>
+                <a href="#attractions">Достопримечательности</a>
             </nav>
         </div>
     </header>
 
+    <!-- ===== ГЕРОЙ ===== -->
     <section class="hero">
         <div class="container">
             <h2>Добро пожаловать в Вязьму!</h2>
@@ -309,26 +297,27 @@
         </div>
     </section>
 
+    <!-- ===== ИСТОРИЯ ===== -->
     <section id="history">
         <div class="container">
             <h2 class="section-title">История города</h2>
             <div class="history-grid">
                 <div class="history-card">
-                    <img src="img/history-1.jpg" alt="Крепостные валы Вязьмы" />
+                    <img src="img/history-1.jpg" alt="Крепостные валы" />
                     <div class="content">
                         <h3>XII–XV века: Основание</h3>
                         <p>Вязьма впервые упоминается в летописях в 1239 году. Город возник как пограничная крепость на торговом пути «из варяг в греки».</p>
                     </div>
                 </div>
                 <div class="history-card">
-                    <img src="img/history-2.jpg" alt="Война 1812 года в Вязьме" />
+                    <img src="img/history-2.jpg" alt="Война 1812 года" />
                     <div class="content">
                         <h3>1812 год: Отечественная война</h3>
                         <p>Вязьма стала ареной ожесточённых сражений. Русские войска нанесли серьёзный урон отступающей армии Наполеона.</p>
                     </div>
                 </div>
                 <div class="history-card">
-                    <img src="img/history-3.jpg" alt="Великая Отечественная война в Вязьме" />
+                    <img src="img/history-3.jpg" alt="Великая Отечественная война" />
                     <div class="content">
                         <h3>1941–1945: Город воинской славы</h3>
                         <p>Вязьма была оккупирована фашистами, но партизанское движение не прекращалось. В 2009 году городу присвоено звание «Город воинской славы».</p>
@@ -338,66 +327,113 @@
         </div>
     </section>
 
-    <section id="routes" style="background:#f0ede8;">
+    <section id="attractions">
         <div class="container">
-            <h2 class="section-title">Туристические маршруты</h2>
-            <div class="routes-grid">
-                <div class="route-item" data-route="museums">
-                    <img src="img/route-1.jpg" alt="Музеи Вязьмы" />
+            <h2 class="section-title">🏛️ Достопримечательности Вязьмы</h2>
+            <div class="attractions-grid">
+                <div class="attraction-card">
+                    <img src="img/attraction-1.jpg" alt="Свято-Троицкий собор" />
                     <div class="info">
-                        <h4>🏛️ Музеи</h4>
-                        <p>Краеведческий музей, музей купеческого быта, музей военной истории</p>
-                        <span class="badge">3 объекта</span>
-                        <div class="show-on-map">👁️ Показать на карте</div>
+                        <h4>Свято-Троицкий собор</h4>
+                        <div class="address">📍 Нагорный переулок, 1</div>
+                        <p>Главный храм города, построен в 1676 году. Величественный пятиглавый собор с уникальным иконостасом.</p>
                     </div>
                 </div>
-                <div class="route-item" data-route="parks">
-                    <img src="img/route-2.jpg" alt="Парки Вязьмы" />
+                <div class="attraction-card">
+                    <img src="img/attraction-2.jpg" alt="Иоанно-Предтеченский монастырь" />
                     <div class="info">
-                        <h4>🌳 Парки</h4>
-                        <p>Парк «Зелёный остров», набережная реки Вязьмы, скверы в центре города</p>
-                        <span class="badge">4 объекта</span>
-                        <div class="show-on-map">👁️ Показать на карте</div>
+                        <h4>Иоанно-Предтеченский монастырь</h4>
+                        <div class="address">📍 ул. Докучаева, 48А</div>
+                        <p>Обитель основана в 1535 году. Один из древнейших монастырей Смоленщины.</p>
                     </div>
                 </div>
-                <div class="route-item" data-route="monuments">
-                    <img src="img/route-3.jpg" alt="Памятники Вязьмы" />
+                <div class="attraction-card">
+                    <img src="img/attraction-3.jpg" alt="Краеведческий музей" />
                     <div class="info">
-                        <h4>🎖️ Памятники</h4>
-                        <p>Памятник 1812 года, Вечный огонь, мемориал воинской славы</p>
-                        <span class="badge">5 объектов</span>
-                        <div class="show-on-map">👁️ Показать на карте</div>
+                        <h4>Краеведческий музей</h4>
+                        <div class="address">📍 Смоленская площадь, 3</div>
+                        <p>Богатейшая экспозиция по истории Вяземского края. Археология, быт, война.</p>
                     </div>
                 </div>
-                <div class="route-item" data-route="all">
-                    <img src="img/route-4.jpg" alt="Все достопримечательности Вязьмы" />
+                <div class="attraction-card">
+                    <img src="img/attraction-4.jpg" alt="Памятник Перновскому полку" />
                     <div class="info">
-                        <h4>📍 Все достопримечательности</h4>
-                        <p>Полный маршрут по всем знаковым местам Вязьмы</p>
-                        <span class="badge">10 объектов</span>
-                        <div class="show-on-map">👁️ Показать на карте</div>
+                        <h4>Памятник Перновскому полку</h4>
+                        <div class="address">📍 Смоленская площадь, 3</div>
+                        <p>Обелиск в честь победы русских войск над армией Наполеона.</p>
                     </div>
                 </div>
+                <div class="attraction-card">
+                    <img src="img/attraction-5.jpg" alt="Вечный огонь" />
+                    <div class="info">
+                        <h4>Вечный огонь</h4>
+                        <div class="address">📍 Площадь Ефремова</div>
+                        <p>Мемориал воинской славы, посвящённый героям Великой Отечественной войны.</p>
+                    </div>
+                </div>
+                <div class="attraction-card">
+                    <img src="img/attraction-6.jpg" alt="Сквер Карла Маркса" />
+                    <div class="info">
+                        <h4>Сквер Карла Маркса</h4>
+                        <div class="address">📍 Пересечение улицы Парижской Коммуны и Страхового переулка.</div>
+                        <p>Уютный городской сквер для спокойных прогулок и отдыха.</p>
+                    </div>
+                </div>
+                <div class="attraction-card">
+                    <img src="img/attraction-7.jpg" alt="Церковь Благовещения" />
+                    <div class="info">
+                        <h4>Церковь Преображения Господня</h4>
+                        <div class="address">📍 Страховой переулок, 4</div>
+                        <p>Старинный храм с красивым иконостасом и колокольней.</p>
+                    </div>
+                </div>
+                <div class="attraction-card">
+                    <img src="img/attraction-8.jpg" alt="Сквер Светланы Евгеньевны Савицкой" />
+                    <div class="info">
+                        <h4>Сквер Светланы Евгеньевны Савицкой</h4>
+                        <div class="address">📍 ул 25-го Октября</div>
+                        <p> Большой, ухоженый сквер с большим количеством растительности и лавок. В начале сквера размещён настоящий МиГ-17 Савицкой.</p>
+                    </div>
+                </div>
+                <div class="attraction-card">
+                    <img src="img/attraction-9.jpg" alt="Набережная Вязьмы" />
+                    <div class="info">
+                        <h4>Набережная реки Вязьмы</h4>
+                        <div class="address">📍Лейтенанта Шмидта</div>
+                        <p>Живописная набережная. Идеально для прогулок.</p>
+                    </div>
+                </div>
+				<div class="attraction-card">
+                <img src="img/attraction-10.jpg" alt="Сквер Героям Первой Мировой" />
+                <div class="info">
+                    <h4>Сквер Героям Первой Мировой</h4>
+                    <div class="address">📍 сквер Героев Первой мировой войны</div>
+                    <p>Мемориальный сквер, посвящённый героям Первой мировой войны.</p>
+                </div>
+            </div>
+
+            <div class="attraction-card">
+                <img src="img/attraction-11.jpg" alt="Спасская Башня" />
+                <div class="info">
+                    <h4>Спасская Башня</h4>
+                    <div class="address">📍 Нагорный переулок, дом 2</div>
+                    <p>Историческая башня, часть бывшего крепостного вала. Единственная уцелевшая башня из 6.</p>
+                </div>
+            </div>
+
+            <div class="attraction-card">
+                <img src="img/attraction-12.jpg" alt="Городской парк" />
+                <div class="info">
+                    <h4>Городской парк</h4>
+                    <div class="address">📍 Городской Парк</div>
+                    <p>Центральный парк города. Любимое место для прогулок, отдыха и семейных мероприятий.</p>
+                </div>
+            </div>
             </div>
         </div>
     </section>
 
-    <section id="map-section">
-        <div class="container">
-            <h2 class="section-title">🗺️ Интерактивная карта Вязьмы</h2>
-            <div class="map-wrapper">
-                <div class="map-controls">
-                    <button class="reset-btn active" data-route="all">📍 Все</button>
-                    <button data-route="museums">🏛️ Музеи</button>
-                    <button data-route="parks">🌳 Парки</button>
-                    <button data-route="monuments">🎖️ Памятники</button>
-                </div>
-                <div id="map"></div>
-                <p class="map-tip">🗺️ Выбери категорию — карта покажет маршрут по дорогам</p>
-            </div>
-        </div>
-    </section>
-
+    <!-- ===== ФУТЕР ===== -->
     <footer>
         <div class="container">
             <p>
@@ -413,198 +449,6 @@
             </p>
         </div>
     </footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-
-            var map = L.map('map', {
-                touchZoom: true,
-                scrollWheelZoom: true,
-                zoomControl: true
-            }).setView([55.2100, 34.2950], 14);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap',
-                maxZoom: 19
-            }).addTo(map);
-
-            var startPoint = [55.2100, 34.2950];
-
-            var routeData = {
-                museums: {
-                    name: 'Музеи',
-                    color: '#D4A017',
-                    places: [
-                        { coords: [55.2060, 34.2880], name: 'Краеведческий музей' },
-                        { coords: [55.2075, 34.2850], name: 'Музей купеческого быта' },
-                        { coords: [55.2085, 34.2900], name: 'Музей военной истории' }
-                    ]
-                },
-                parks: {
-                    name: 'Парки',
-                    color: '#2E7D32',
-                    places: [
-                        { coords: [55.2130, 34.2850], name: 'Парк «Зелёный остров»' },
-                        { coords: [55.2145, 34.2800], name: 'Набережная реки Вязьмы' },
-                        { coords: [55.2110, 34.2820], name: 'Сквер у фонтана' },
-                        { coords: [55.2120, 34.2830], name: 'Городской сад' }
-                    ]
-                },
-                monuments: {
-                    name: 'Памятники',
-                    color: '#B22222',
-                    places: [
-                        { coords: [55.2100, 34.2885], name: 'Памятник 1812 года' },
-                        { coords: [55.2150, 34.2920], name: 'Вечный огонь' },
-                        { coords: [55.2160, 34.2910], name: 'Мемориал воинской славы' },
-                        { coords: [55.2140, 34.2890], name: 'Братская могила' },
-                        { coords: [55.2115, 34.2875], name: 'Аллея Героев' }
-                    ]
-                },
-                all: {
-                    name: 'Все достопримечательности',
-                    color: '#1e3a5f',
-                    places: [
-                        { coords: [55.2060, 34.2880], name: 'Краеведческий музей' },
-                        { coords: [55.2075, 34.2850], name: 'Музей купеческого быта' },
-                        { coords: [55.2085, 34.2900], name: 'Музей военной истории' },
-                        { coords: [55.2130, 34.2850], name: 'Парк «Зелёный остров»' },
-                        { coords: [55.2145, 34.2800], name: 'Набережная реки Вязьмы' },
-                        { coords: [55.2110, 34.2820], name: 'Сквер у фонтана' },
-                        { coords: [55.2120, 34.2830], name: 'Городской сад' },
-                        { coords: [55.2100, 34.2885], name: 'Памятник 1812 года' },
-                        { coords: [55.2150, 34.2920], name: 'Вечный огонь' },
-                        { coords: [55.2160, 34.2910], name: 'Мемориал воинской славы' },
-                        { coords: [55.2140, 34.2890], name: 'Братская могила' },
-                        { coords: [55.2115, 34.2875], name: 'Аллея Героев' }
-                    ]
-                }
-            };
-
-            var currentRoute = null;
-            var currentMarkers = [];
-            var tipElement = document.querySelector('.map-tip');
-
-            function clearMarkers() {
-                currentMarkers.forEach(function(m) { map.removeLayer(m); });
-                currentMarkers = [];
-            }
-
-            function formatTime(minutes) {
-                if (minutes < 60) {
-                    return Math.round(minutes) + ' мин';
-                } else {
-                    var hours = Math.floor(minutes / 60);
-                    var mins = Math.round(minutes % 60);
-                    return hours + ' ч ' + mins + ' мин';
-                }
-            }
-
-            function buildRoute(routeKey) {
-                if (currentRoute) {
-                    map.removeControl(currentRoute);
-                    currentRoute = null;
-                }
-                clearMarkers();
-
-                var data = routeData[routeKey];
-                if (!data) return;
-
-                var points = [startPoint];
-                for (var i = 0; i < data.places.length; i++) {
-                    points.push(data.places[i].coords);
-                }
-                points.push(startPoint);
-
-                var router = L.Routing.control({
-                    waypoints: points.map(function(p) { return L.latLng(p[0], p[1]); }),
-                    routeWhileDragging: false,
-                    show: false,
-                    lineOptions: {
-                        styles: [{ color: data.color, weight: 6, opacity: 0.9 }]
-                    },
-                    createMarker: function() { return null; },
-                    router: L.Routing.osrmv1({
-                        serviceUrl: 'https://router.project-osrm.org/route/v1/',
-                        profile: 'foot'
-                    })
-                });
-
-                router.on('routesfound', function(e) {
-                    var route = e.routes[0];
-                    var summary = route.summary;
-                    var totalDistance = (summary.totalDistance / 1000).toFixed(1);
-                    var totalTime = totalDistance * 18;
-
-                    var bounds = L.latLngBounds(route.coordinates);
-                    map.fitBounds(bounds, { padding: [40, 40] });
-
-                    var routeNames = {
-                        museums: 'по музеям',
-                        parks: 'по паркам',
-                        monuments: 'по памятникам',
-                        all: 'по всем достопримечательностям'
-                    };
-
-                    tipElement.textContent = '🚶 Маршрут ' + routeNames[routeKey] + ' • ' + totalDistance + ' км • ' + formatTime(totalTime);
-                });
-
-                router.on('routingerror', function() {
-                    tipElement.textContent = '⚠️ Не удалось построить маршрут. Попробуйте другую категорию.';
-                });
-
-                currentRoute = router;
-                router.addTo(map);
-
-                for (var j = 0; j < data.places.length; j++) {
-                    var p = data.places[j];
-                    var marker = L.marker(p.coords).addTo(map);
-                    marker.bindPopup('<strong>' + p.name + '</strong>');
-                    currentMarkers.push(marker);
-                }
-            }
-
-            var buttons = document.querySelectorAll('.map-controls button[data-route]');
-            for (var k = 0; k < buttons.length; k++) {
-                buttons[k].addEventListener('click', function() {
-                    var btns = document.querySelectorAll('.map-controls button[data-route]');
-                    for (var b = 0; b < btns.length; b++) {
-                        btns[b].classList.remove('active');
-                    }
-                    this.classList.add('active');
-                    buildRoute(this.dataset.route);
-                });
-            }
-
-            var items = document.querySelectorAll('.route-item');
-            for (var m = 0; m < items.length; m++) {
-                (function(item) {
-                    var routeKey = item.dataset.route;
-                    var showBtn = item.querySelector('.show-on-map');
-                    if (showBtn) {
-                        showBtn.addEventListener('click', function(e) {
-                            e.stopPropagation();
-                            var btn = document.querySelector('.map-controls button[data-route="' + routeKey + '"]');
-                            if (btn) btn.click();
-                            document.getElementById('map-section').scrollIntoView({ behavior: 'smooth' });
-                        });
-                    }
-                    item.addEventListener('click', function() {
-                        var btn = document.querySelector('.map-controls button[data-route="' + routeKey + '"]');
-                        if (btn) btn.click();
-                        document.getElementById('map-section').scrollIntoView({ behavior: 'smooth' });
-                    });
-                })(items[m]);
-            }
-
-            buildRoute('all');
-
-            setTimeout(function() {
-                map.invalidateSize();
-            }, 500);
-
-        });
-    </script>
 
 </body>
 </html>
