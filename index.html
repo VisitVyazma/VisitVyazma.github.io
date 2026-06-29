@@ -197,14 +197,93 @@
             padding: 14px 12px 6px;
             font-weight: 600;
             color: #1a3a2a;
-            font-size: 1rem;
-            opacity: 0.5;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            opacity: 0.9;
         }
+        .hero-page {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+                url('img/hero-bg.jpg') center/cover no-repeat;
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #fff;
+            border-radius: 24px;
+            padding: 40px 20px;
+        }
+        .hero-page h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.7);
+            margin-bottom: 16px;
+        }
+        .hero-page p {
+            font-size: 1.4rem;
+            max-width: 700px;
+            margin: 0 auto 24px;
+            opacity: 0.9;
+        }
+        .hero-page .btn-hero {
+            display: inline-block;
+            background: #b8d4a0;
+            color: #1a3a2a;
+            padding: 14px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: 0.3s;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+        }
+        .hero-page .btn-hero:hover {
+            background: #d0e8c0;
+            transform: scale(1.04);
+        }
+        .creators-list {
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px 36px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            border: 1px solid #dce8d8;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .creators-list h1 {
+            font-size: 2rem;
+            color: #1a3a2a;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #b8d4a0;
+            padding-bottom: 12px;
+        }
+        .creators-list p {
+            font-size: 1.2rem;
+            padding: 10px 0;
+            border-bottom: 1px solid #e8f0e5;
+        }
+        .creators-list p:last-child {
+            border-bottom: none;
+        }
+        .creators-list a {
+            color: #1a3a2a;
+            font-weight: 700;
+            text-decoration: none;
+            border-bottom: 2px solid #b8d4a0;
+            transition: 0.2s;
+        }
+        .creators-list a:hover {
+            color: #2a5a3a;
+            border-bottom-color: #2a5a3a;
+        }
+
         @media (max-width: 900px) {
             .sidebar { width: 220px; padding: 20px 14px; }
             .main { margin-left: 220px; padding: 30px 20px; max-width: calc(100% - 220px); }
             .grid-3 { grid-template-columns: 1fr 1fr; }
             .grid-4 { grid-template-columns: 1fr 1fr; }
+            .hero-page h1 { font-size: 2.8rem; }
         }
         @media (max-width: 640px) {
             .sidebar {
@@ -235,6 +314,8 @@
             }
             .page-title { font-size: 1.8rem; }
             .timeline-item { padding: 16px 18px; }
+            .hero-page h1 { font-size: 2.2rem; }
+            .hero-page p { font-size: 1rem; }
         }
     </style>
 </head>
@@ -243,7 +324,8 @@
     <aside class="sidebar">
         <h2>🏛️ <span>Вязьма</span></h2>
         <nav>
-            <a href="#" class="active" data-page="attractions">Достопримечательности</a>
+            <a href="#" class="active" data-page="home">Главная</a>
+            <a href="#" data-page="attractions">Достопримечательности</a>
             <a href="#" data-page="history">История</a>
             <a href="#" data-page="facts">Интересные факты</a>
             <a href="#" data-page="food">Где поесть</a>
@@ -255,7 +337,17 @@
 
     <main class="main">
 
-        <section class="page active" id="page-attractions">
+        <section class="page active" id="page-home">
+            <div class="hero-page">
+                <div>
+                    <h1>Добро пожаловать в Вязьму</h1>
+                    <p>Город воинской славы, древняя крепость на Смоленской земле. Здесь переплелись вехи истории, от средневековых валов до современных культурных троп.</p>
+                    <a href="#" class="btn-hero" onclick="document.querySelector('[data-page=attractions]').click(); return false;">Изучить достопримечательности</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="page" id="page-attractions">
             <h2 class="page-title">🏛️ Достопримечательности <small>Вязьмы</small></h2>
             <div class="grid-3">
 
@@ -420,7 +512,7 @@
                     <div class="year">XVI век</div>
                     <p>Приписана к опричнине при Иване Грозном. Активно развиваются ремёсла (кожевенное производство) и торговля по Старой Смоленской дороге.</p>
                 </div>
-                
+
                 <div class="timeline-item">
                     <div class="year">1632 год</div>
                     <p>Построена каменная крепость с шестью башнями. Сохранилась Спасская башня. Город неоднократно подвергался польским набегам.</p>
@@ -483,40 +575,40 @@
             <h2 class="page-title">💡 Интересные факты <small>о Вязьме</small></h2>
             <div class="grid-3">
                 <div class="fact-card">
-                    <img src="img/fact-1.jpg" alt="Раздробленность" />
-                    <div class="fact-label">В 1239 году было основано Вяземской княжество, отделившееся от Смоленского княжества и просуществовало до 1403 года.</div>
+                    <img src="img/fact-1.jpg" alt="Вяземское княжество" />
+                    <div class="fact-label">В 1239 году образовано Вяземское княжество, отделившееся от Смоленского. Оно просуществовало до 1403 года.</div>
                 </div>
                 <div class="fact-card">
-                    <img src="img/fact-2.jpg" alt="Вязьма-столица Руси" />
-                    <div class="fact-label">В 1654 году Вязьма фактически была столицей в течении 4 месяцев. Царь Алексей Михайлович жил в Вязьме и издавал указы во время эпидемии чумы в Москве.</div>
+                    <img src="img/fact-2.jpg" alt="Вязьма — столица Руси" />
+                    <div class="fact-label">В 1654 году Вязьма фактически была столицей Руси в течение 4 месяцев. Царь Алексей Михайлович жил здесь и издавал указы во время эпидемии чумы в Москве.</div>
                 </div>
                 <div class="fact-card">
-                    <img src="img/fact-3.jpg" alt="Не оффициальный символ" />
-                    <div class="fact-label">В Вязьме есть не оффициальный символ: Вязьмичокъ.</div>
+                    <img src="img/fact-3.jpg" alt="Вязьмичокъ" />
+                    <div class="fact-label">У Вязьмы есть неофициальный символ — «Вязьмичокъ», который олицетворяет дух и историю города.</div>
                 </div>
                 <div class="fact-card">
-                    <img src="img/fact-4.jpg" alt="Факт 4" />
-                    <div class="fact-label">Факт 4</div>
+                    <img src="img/fact-4.jpg" alt="Пряничная столица" />
+                    <div class="fact-label">В XIX веке Вязьма считалась пряничной столицей России. В 1850 году здесь работало 8 пряничных фабрик, а вяземский пряник поставляли даже к императорскому столу.</div>
                 </div>
                 <div class="fact-card">
-                    <img src="img/fact-5.jpg" alt="Факт 5" />
-                    <div class="fact-label">Факт 5</div>
+                    <img src="img/fact-5.jpg" alt="Железнодорожный узел" />
+                    <div class="fact-label">С 1870 года Вязьма стала крупным железнодорожным узлом. Через город прошла Московско-Брестская железная дорога, что дало мощный толчок развитию экономики.</div>
                 </div>
                 <div class="fact-card">
-                    <img src="img/fact-6.jpg" alt="Факт 6" />
-                    <div class="fact-label">Факт 6</div>
+                    <img src="img/fact-6.jpg" alt="Спасская башня" />
+                    <div class="fact-label">Спасская башня — единственная сохранившаяся из шести башен Вяземской крепости, построенной в 1632 году. Она является символом города.</div>
                 </div>
                 <div class="fact-card">
-                    <img src="img/fact-7.jpg" alt="Факт 7" />
-                    <div class="fact-label">Факт 7</div>
+                    <img src="img/fact-7.jpg" alt="Город воинской славы" />
+                    <div class="fact-label">В 2009 году Вязьме присвоено почётное звание «Город воинской славы» за мужество и героизм защитников в годы Великой Отечественной войны.</div>
                 </div>
                 <div class="fact-card">
-                    <img src="img/fact-8.jpg" alt="Факт 8" />
-                    <div class="fact-label">Факт 8</div>
+                    <img src="img/fact-8.jpg" alt="Вяземский котёл" />
+                    <div class="fact-label">В октябре 1941 года под Вязьмой произошла одна из самых трагических операций Великой Отечественной войны — «Вяземский котёл», где в окружение попали сотни тысяч советских солдат.</div>
                 </div>
                 <div class="fact-card">
-                    <img src="img/fact-9.jpg" alt="Факт 9" />
-                    <div class="fact-label">Факт 9</div>
+                    <img src="img/fact-9.jpg" alt="Туристический центр" />
+                    <div class="fact-label">Сегодня Вязьма — важный культурный и гастрономический центр Смоленщины. Сюда едут за историей, архитектурой и знаменитыми вяземскими пряниками.</div>
                 </div>
             </div>
         </section>
@@ -539,9 +631,14 @@
 
         <section class="page" id="page-creators">
             <h2 class="page-title">👨‍💻 Создатели</h2>
-            <div class="empty-block">
-                <h3>🚧 Скоро здесь появится информация о создателях</h3>
-                <p>Мы напишем о команде, которая сделала этот сайт.</p>
+            <div class="creators-list">
+                <h1>Команда Кванториума Вязьмы:</h1>
+                <p><strong>Руководитель: Ромашкан Сергей</strong> </p>
+                <p><strong>Программист: Фотиев Виктор</strong> </p>
+                <p><strong>Идеи дизайна: Котова Алиса, Соловьёв Тимофей</strong> </p>
+                <p style="margin-top:20px; border-bottom: none; font-size:1rem;">
+                    <a href="https://vk.com/kvantorium_vyazma" target="_blank">Кванториум</a> — это пространство, где мы учимся и создаём будущее.
+                </p>
             </div>
         </section>
 
