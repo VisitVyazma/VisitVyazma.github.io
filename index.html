@@ -1,162 +1,193 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <link rel="icon" href="https://example.com/favicon.ico" type="image/x-icon">
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <title>Вязьма — гид по городу</title>
     <meta name="description" content="Вязьма: история, достопримечательности, где поесть и купить сувениры." />
     <link rel="icon" href="img/logo.png" type="image/png" />
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f4f6f4;
             color: #1e2e24;
             display: flex;
+            flex-direction: column;
             min-height: 100vh;
         }
+
         .sidebar {
-            width: 280px;
+            width: 100%;
             background: #1a3a2a;
             color: #e0e8dd;
-            padding: 30px 20px;
-            position: fixed;
+            padding: 16px 20px;
+            position: sticky;
             top: 0;
-            left: 0;
-            bottom: 0;
-            overflow-y: auto;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
             z-index: 10;
-            transition: 0.3s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
         }
         .sidebar h2 {
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             color: #d8edc8;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #3a5a44;
-            padding-bottom: 12px;
+            margin: 0;
+            border: none;
+            padding: 0;
+            flex-shrink: 0;
         }
-        .sidebar h2 span { color: #b8d4a0; }
+        .sidebar h2 span {
+            color: #b8d4a0;
+        }
+        .sidebar nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 12px;
+            padding: 6px 0;
+        }
         .sidebar nav a {
-            display: block;
-            padding: 12px 16px;
+            padding: 6px 12px;
             color: #c0dccd;
             text-decoration: none;
-            border-radius: 10px;
-            margin-bottom: 6px;
-            transition: 0.2s;
+            border-radius: 30px;
             font-weight: 500;
-            border-left: 3px solid transparent;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            transition: 0.2s;
+            border-left: none;
         }
         .sidebar nav a:hover {
             background: #2a4a38;
             color: #fff;
-            border-left-color: #b8d4a0;
         }
         .sidebar nav a.active {
             background: #2a4a38;
             color: #fff;
-            border-left-color: #d8edc8;
         }
         .sidebar .footer-small {
-            margin-top: 40px;
-            font-size: 0.75rem;
-            opacity: 0.5;
-            text-align: center;
-            border-top: 1px solid #3a5a44;
-            padding-top: 16px;
+            display: none;
         }
+
         .main {
-            margin-left: 280px;
-            padding: 40px 30px;
             flex: 1;
-            max-width: calc(100% - 280px);
+            padding: 24px 16px;
+            max-width: 100%;
+            margin: 0 auto;
+            width: 100%;
         }
+
         .page {
             display: none;
             animation: fade 0.3s ease;
         }
-        .page.active { display: block; }
-        @keyframes fade {
-            0% { opacity: 0.3; transform: translateY(8px); }
-            100% { opacity: 1; transform: translateY(0); }
+        .page.active {
+            display: block;
         }
+        @keyframes fade {
+            0% {
+                opacity: 0.3;
+                transform: translateY(8px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .page-title {
-            font-size: 2.4rem;
+            font-size: 1.8rem;
             font-weight: 600;
             color: #1a3a2a;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             border-bottom: 3px solid #b8d4a0;
-            padding-bottom: 12px;
+            padding-bottom: 10px;
         }
         .page-title small {
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 400;
             color: #3a6a4a;
+            display: block;
+            margin-top: 2px;
         }
+
         .grid-3 {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
+            grid-template-columns: 1fr;
+            gap: 20px;
         }
-        .grid-4 {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 24px;
-        }
+
         .card {
             background: #fff;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
             border: 1px solid #dce8d8;
             transition: 0.25s;
         }
-        .card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(30,60,30,0.08); }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(30, 60, 30, 0.08);
+        }
         .card img {
             width: 100%;
             height: 190px;
             object-fit: cover;
             background: #d4e2ca;
         }
-        .card-body { padding: 18px 22px; }
+        .card-body {
+            padding: 16px 18px;
+        }
         .card-body h3 {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             color: #1a3a2a;
             margin-bottom: 4px;
         }
         .card-body .address {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #3a6a4a;
             margin-bottom: 8px;
         }
         .card-body p {
             color: #2a4533;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
+
         .empty-block {
             background: #eef5ec;
             border-radius: 20px;
-            padding: 60px 30px;
+            padding: 40px 20px;
             text-align: center;
             border: 2px dashed #b8d0a8;
             color: #3a5a44;
         }
-        .empty-block h3 { font-size: 1.6rem; margin-bottom: 10px; color: #1a3a2a; }
-        .empty-block p { font-size: 1.1rem; opacity: 0.7; }
+        .empty-block h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: #1a3a2a;
+        }
+        .empty-block p {
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+
         .timeline {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
         }
         .timeline-item {
             background: #fff;
             border-radius: 16px;
-            padding: 22px 28px;
+            padding: 18px 20px;
             border-left: 6px solid #1a3a2a;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-            transition: 0.2s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
         }
         .timeline-item:hover {
             background: #f8fbf7;
@@ -164,30 +195,34 @@
         }
         .timeline-item .year {
             font-weight: 700;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #1a3a2a;
             display: inline-block;
             background: #e2ede0;
-            padding: 2px 16px;
+            padding: 2px 14px;
             border-radius: 30px;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
         .timeline-item p {
             color: #2a4533;
-            font-size: 1rem;
+            font-size: 0.95rem;
             margin-top: 4px;
         }
+
         .fact-card {
             background: #fff;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
             border: 1px solid #dce8d8;
             transition: 0.25s;
             text-align: center;
             padding-bottom: 12px;
         }
-        .fact-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(30,60,30,0.08); }
+        .fact-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(30, 60, 30, 0.08);
+        }
         .fact-card img {
             width: 100%;
             height: 180px;
@@ -198,44 +233,45 @@
             padding: 14px 12px 6px;
             font-weight: 600;
             color: #1a3a2a;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             line-height: 1.5;
             opacity: 0.9;
         }
+
         .hero-page {
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
                 url('img/hero-bg.jpg') center/cover no-repeat;
-            min-height: 80vh;
+            min-height: 70vh;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
             color: #fff;
-            border-radius: 24px;
-            padding: 40px 20px;
+            border-radius: 20px;
+            padding: 30px 20px;
         }
         .hero-page h1 {
-            font-size: 4rem;
+            font-size: 2.4rem;
             font-weight: 700;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.7);
-            margin-bottom: 16px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+            margin-bottom: 12px;
         }
         .hero-page p {
-            font-size: 1.4rem;
+            font-size: 1.1rem;
             max-width: 700px;
-            margin: 0 auto 24px;
+            margin: 0 auto 20px;
             opacity: 0.9;
         }
         .hero-page .btn-hero {
             display: inline-block;
             background: #b8d4a0;
             color: #1a3a2a;
-            padding: 14px 40px;
+            padding: 12px 32px;
             border-radius: 50px;
             font-weight: 700;
             text-decoration: none;
             transition: 0.3s;
-            font-size: 1.1rem;
+            font-size: 1rem;
             border: none;
             cursor: pointer;
         }
@@ -243,25 +279,26 @@
             background: #d0e8c0;
             transform: scale(1.04);
         }
+
         .creators-list {
             background: #fff;
             border-radius: 20px;
-            padding: 40px 36px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            padding: 30px 24px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
             border: 1px solid #dce8d8;
-            max-width: 700px;
+            max-width: 100%;
             margin: 0 auto;
         }
         .creators-list h1 {
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: #1a3a2a;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             border-bottom: 2px solid #b8d4a0;
-            padding-bottom: 12px;
+            padding-bottom: 10px;
         }
         .creators-list p {
-            font-size: 1.2rem;
-            padding: 10px 0;
+            font-size: 1.1rem;
+            padding: 8px 0;
             border-bottom: 1px solid #e8f0e5;
         }
         .creators-list p:last-child {
@@ -279,44 +316,108 @@
             border-bottom-color: #2a5a3a;
         }
 
-        @media (max-width: 900px) {
-            .sidebar { width: 220px; padding: 20px 14px; }
-            .main { margin-left: 220px; padding: 30px 20px; max-width: calc(100% - 220px); }
-            .grid-3 { grid-template-columns: 1fr 1fr; }
-            .grid-4 { grid-template-columns: 1fr 1fr; }
-            .hero-page h1 { font-size: 2.8rem; }
+        @media (min-width: 600px) {
+            .grid-3 {
+                grid-template-columns: 1fr 1fr;
+            }
+            .hero-page h1 {
+                font-size: 3rem;
+            }
+            .page-title {
+                font-size: 2.2rem;
+            }
         }
-        @media (max-width: 640px) {
+
+        @media (min-width: 900px) {
+            body {
+                flex-direction: row;
+            }
             .sidebar {
-                width: 100%;
-                position: relative;
-                height: auto;
-                padding: 16px;
+                width: 280px;
+                flex-direction: column;
+                align-items: stretch;
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                padding: 30px 20px;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .sidebar h2 {
+                font-size: 1.6rem;
+                margin-bottom: 30px;
+                border-bottom: 2px solid #3a5a44;
+                padding-bottom: 12px;
             }
             .sidebar nav {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 6px;
+                flex-direction: column;
+                gap: 4px;
             }
             .sidebar nav a {
-                padding: 8px 14px;
-                font-size: 0.9rem;
-                margin-bottom: 0;
+                padding: 12px 16px;
+                font-size: 1rem;
+                border-left: 3px solid transparent;
+                border-radius: 10px;
+                background: transparent;
             }
-            .sidebar h2 { margin-bottom: 16px; }
-            .sidebar .footer-small { display: none; }
+            .sidebar nav a:hover {
+                background: #2a4a38;
+                border-left-color: #b8d4a0;
+            }
+            .sidebar nav a.active {
+                background: #2a4a38;
+                border-left-color: #d8edc8;
+            }
+            .sidebar .footer-small {
+                display: block;
+                margin-top: 40px;
+                font-size: 0.75rem;
+                opacity: 0.5;
+                text-align: center;
+                border-top: 1px solid #3a5a44;
+                padding-top: 16px;
+            }
             .main {
                 margin-left: 0;
-                max-width: 100%;
-                padding: 20px 14px;
+                padding: 40px 30px;
+                max-width: calc(100% - 280px);
             }
-            .grid-3, .grid-4 {
-                grid-template-columns: 1fr;
+            .grid-3 {
+                grid-template-columns: repeat(3, 1fr);
             }
-            .page-title { font-size: 1.8rem; }
-            .timeline-item { padding: 16px 18px; }
-            .hero-page h1 { font-size: 2.2rem; }
-            .hero-page p { font-size: 1rem; }
+            .hero-page h1 {
+                font-size: 4rem;
+            }
+            .page-title {
+                font-size: 2.4rem;
+            }
+            .creators-list {
+                max-width: 700px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .sidebar {
+                padding: 12px 14px;
+            }
+            .sidebar h2 {
+                font-size: 1.1rem;
+            }
+            .sidebar nav a {
+                font-size: 0.7rem;
+                padding: 4px 10px;
+            }
+            .hero-page h1 {
+                font-size: 1.8rem;
+            }
+            .hero-page p {
+                font-size: 0.95rem;
+            }
+            .page-title {
+                font-size: 1.5rem;
+            }
+            .card img {
+                height: 150px;
+            }
         }
     </style>
 </head>
@@ -328,9 +429,9 @@
             <a href="#" class="active" data-page="home">Главная</a>
             <a href="#" data-page="attractions">Достопримечательности</a>
             <a href="#" data-page="history">История</a>
-            <a href="#" data-page="facts">Интересные факты</a>
-            <a href="#" data-page="food">Где поесть</a>
-            <a href="#" data-page="souvenirs">Где купить сувениры</a>
+            <a href="#" data-page="facts">Факты</a>
+            <a href="#" data-page="food">Поесть</a>
+            <a href="#" data-page="souvenirs">Сувениры</a>
             <a href="#" data-page="creators">Создатели</a>
         </nav>
         <div class="footer-small">© 2026 · Туризм Вязьма</div>
@@ -633,10 +734,10 @@
         <section class="page" id="page-creators">
             <h2 class="page-title">👨‍💻 Создатели</h2>
             <div class="creators-list">
-                <h1>Команда Кванториума Вязьмы:</h1>
-                <p><strong>Руководитель: Ромашкан Сергей</strong> </p>
-                <p><strong>Программист: Фотиев Виктор</strong> </p>
-                <p><strong>Идеи дизайна: Котова Алиса, Соловьёв Тимофей</strong> </p>
+                <h1>Команда Кванториума:</h1>
+                <p><strong>Руководитель:</strong> </p>
+                <p><strong>Программист:</strong> </p>
+                <p><strong>Идеи дизайна:</strong> </p>
                 <p style="margin-top:20px; border-bottom: none; font-size:1rem;">
                     <a href="https://vk.com/kvantorium_vyazma" target="_blank">Кванториум</a> — это пространство, где мы учимся и создаём будущее.
                 </p>
