@@ -1,12 +1,19 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <link rel="icon" href="https://example.com/favicon.ico" type="image/x-icon">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Вязьма — гид по городу</title>
-    <meta name="description" content="Вязьма: история, достопримечательности, где поесть и купить сувениры." />
+    <meta name="description" content="Вязьма: история города, достопримечательности, карта маршрутов и интересные факты." />
+    
+    <!-- Этот тег решает проблему с блокировкой карт при локальном просмотре -->
+    <meta name="referrer" content="no-referrer" />
+    
     <link rel="icon" href="img/logo.png" type="image/png" />
+    
+    <!-- Стили Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -22,318 +29,172 @@
             color: #e0e8dd;
             padding: 30px 20px;
             position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
+            top: 0; left: 0; bottom: 0;
             overflow-y: auto;
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
             z-index: 10;
-            transition: 0.3s;
-        }
-        .sidebar h2 {
-            font-size: 1.6rem;
-            color: #d8edc8;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #3a5a44;
-            padding-bottom: 12px;
-        }
-        .sidebar h2 span { color: #b8d4a0; }
-        .sidebar nav a {
-            display: block;
-            padding: 12px 16px;
-            color: #c0dccd;
-            text-decoration: none;
-            border-radius: 10px;
-            margin-bottom: 6px;
-            transition: 0.2s;
-            font-weight: 500;
-            border-left: 3px solid transparent;
-        }
-        .sidebar nav a:hover {
-            background: #2a4a38;
-            color: #fff;
-            border-left-color: #b8d4a0;
-        }
-        .sidebar nav a.active {
-            background: #2a4a38;
-            color: #fff;
-            border-left-color: #d8edc8;
-        }
-        .sidebar .footer-small {
-            margin-top: 40px;
-            font-size: 0.75rem;
-            opacity: 0.5;
-            text-align: center;
-            border-top: 1px solid #3a5a44;
-            padding-top: 16px;
-        }
-        .main {
-            margin-left: 280px;
-            padding: 40px 30px;
-            flex: 1;
-            max-width: calc(100% - 280px);
-        }
-        .page {
-            display: none;
-            animation: fade 0.3s ease;
-        }
-        .page.active { display: block; }
-        @keyframes fade {
-            0% { opacity: 0.3; transform: translateY(8px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        .page-title {
-            font-size: 2.4rem;
-            font-weight: 600;
-            color: #1a3a2a;
-            margin-bottom: 30px;
-            border-bottom: 3px solid #b8d4a0;
-            padding-bottom: 12px;
-        }
-        .page-title small {
-            font-size: 1rem;
-            font-weight: 400;
-            color: #3a6a4a;
-        }
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-        }
-        .grid-4 {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 24px;
-        }
-        .card {
-            background: #fff;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-            border: 1px solid #dce8d8;
-            transition: 0.25s;
-        }
-        .card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(30,60,30,0.08); }
-        .card img {
-            width: 100%;
-            height: 190px;
-            object-fit: cover;
-            background: #d4e2ca;
-        }
-        .card-body { padding: 18px 22px; }
-        .card-body h3 {
-            font-size: 1.25rem;
-            color: #1a3a2a;
-            margin-bottom: 4px;
-        }
-        .card-body .address {
-            font-size: 0.9rem;
-            color: #3a6a4a;
-            margin-bottom: 8px;
-        }
-        .card-body p {
-            color: #2a4533;
-            font-size: 0.95rem;
-        }
-        .empty-block {
-            background: #eef5ec;
-            border-radius: 20px;
-            padding: 60px 30px;
-            text-align: center;
-            border: 2px dashed #b8d0a8;
-            color: #3a5a44;
-        }
-        .empty-block h3 { font-size: 1.6rem; margin-bottom: 10px; color: #1a3a2a; }
-        .empty-block p { font-size: 1.1rem; opacity: 0.7; }
-        .timeline {
             display: flex;
             flex-direction: column;
-            gap: 20px;
         }
-        .timeline-item {
-            background: #fff;
-            border-radius: 16px;
-            padding: 22px 28px;
-            border-left: 6px solid #1a3a2a;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-            transition: 0.2s;
-        }
-        .timeline-item:hover {
-            background: #f8fbf7;
-            border-left-color: #b8d4a0;
-        }
-        .timeline-item .year {
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: #1a3a2a;
-            display: inline-block;
-            background: #e2ede0;
-            padding: 2px 16px;
-            border-radius: 30px;
-            margin-bottom: 6px;
-        }
-        .timeline-item p {
-            color: #2a4533;
-            font-size: 1rem;
-            margin-top: 4px;
-        }
-        .fact-card {
-            background: #fff;
+        .sidebar h2 { font-size: 1.6rem; color: #d8edc8; margin-bottom: 30px; border-bottom: 2px solid #3a5a44; padding-bottom: 12px; }
+        .sidebar h2 span { color: #b8d4a0; }
+        .sidebar nav a { display: block; padding: 12px 16px; color: #c0dccd; text-decoration: none; border-radius: 10px; margin-bottom: 6px; transition: 0.2s; font-weight: 500; border-left: 3px solid transparent; }
+        .sidebar nav a:hover, .sidebar nav a.active { background: #2a4a38; color: #fff; border-left-color: #b8d4a0; }
+        .sidebar-bottom { margin-top: auto; padding-top: 30px; text-align: center; }
+        .creators-link { display: inline-block; padding: 6px 16px; color: #9db8a6; font-size: 0.8rem; text-decoration: none; border-radius: 30px; border: 1px solid #2f4d3b; transition: 0.25s; }
+        .creators-link:hover, .creators-link.active { color: #e0e8dd; background: #2a4a38; border-color: #3a5a44; }
+        .footer-small { margin-top: 14px; font-size: 0.7rem; opacity: 0.4; }
+        
+        .main { margin-left: 280px; padding: 40px 30px; flex: 1; max-width: calc(100% - 280px); }
+        .page { display: none; animation: fade 0.3s ease; }
+        .page.active { display: block; }
+        @keyframes fade { 0% { opacity: 0.3; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+        .page-title { font-size: 2.4rem; font-weight: 600; color: #1a3a2a; margin-bottom: 30px; border-bottom: 3px solid #b8d4a0; padding-bottom: 12px; }
+        .page-title small { font-size: 1rem; font-weight: 400; color: #3a6a4a; }
+        
+        /* КАРТА */
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 65vh;
+            min-height: 500px;
             border-radius: 20px;
             overflow: hidden;
+            background: #e8efe4;
             box-shadow: 0 4px 16px rgba(0,0,0,0.06);
             border: 1px solid #dce8d8;
-            transition: 0.25s;
-            text-align: center;
-            padding-bottom: 12px;
+            z-index: 1;
         }
-        .fact-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(30,60,30,0.08); }
-        .fact-card img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            background: #d4e2ca;
-        }
-        .fact-card .fact-label {
-            padding: 14px 12px 6px;
-            font-weight: 600;
-            color: #1a3a2a;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            opacity: 0.9;
-        }
-        .hero-page {
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
-                url('img/hero-bg.jpg') center/cover no-repeat;
-            min-height: 80vh;
+        #map { width: 100%; height: 100%; z-index: 1; }
+
+        /* Кнопки поверх карты */
+        .map-controls {
+            position: absolute;
+            z-index: 1000;
+            top: 16px;
+            left: 16px;
             display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
             align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: #fff;
-            border-radius: 24px;
-            padding: 40px 20px;
         }
-        .hero-page h1 {
-            font-size: 4rem;
-            font-weight: 700;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.7);
-            margin-bottom: 16px;
-        }
-        .hero-page p {
-            font-size: 1.4rem;
-            max-width: 700px;
-            margin: 0 auto 24px;
-            opacity: 0.9;
-        }
-        .hero-page .btn-hero {
-            display: inline-block;
-            background: #b8d4a0;
-            color: #1a3a2a;
-            padding: 14px 40px;
-            border-radius: 50px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: 0.3s;
-            font-size: 1.1rem;
+        .map-controls button {
             border: none;
-            cursor: pointer;
-        }
-        .hero-page .btn-hero:hover {
-            background: #d0e8c0;
-            transform: scale(1.04);
-        }
-        .creators-list {
+            border-radius: 10px;
+            padding: 10px 14px;
             background: #fff;
-            border-radius: 20px;
-            padding: 40px 36px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-            border: 1px solid #dce8d8;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-        .creators-list h1 {
-            font-size: 2rem;
             color: #1a3a2a;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #b8d4a0;
-            padding-bottom: 12px;
-        }
-        .creators-list p {
-            font-size: 1.2rem;
-            padding: 10px 0;
-            border-bottom: 1px solid #e8f0e5;
-        }
-        .creators-list p:last-child {
-            border-bottom: none;
-        }
-        .creators-list a {
-            color: #1a3a2a;
-            font-weight: 700;
-            text-decoration: none;
-            border-bottom: 2px solid #b8d4a0;
+            font-family: inherit;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             transition: 0.2s;
         }
-        .creators-list a:hover {
-            color: #2a5a3a;
-            border-bottom-color: #2a5a3a;
+        .map-controls button:hover { background: #eef5ec; }
+        .map-controls .btn-primary { background: #1a3a2a; color: #fff; }
+        .map-controls .btn-primary:hover { background: #24503a; }
+        .map-controls .btn-primary[aria-expanded="true"] { background: #b8d4a0; color: #1a3a2a; }
+
+        .map-side {
+            position: absolute;
+            z-index: 1000;
+            top: 70px;
+            right: 16px;
+            width: min(330px, calc(100% - 32px));
+            max-height: calc(100% - 140px);
+            overflow-y: auto;
+            padding: 18px;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+            display: none;
         }
+        .map-side.is-open { display: block; }
+        .map-side h3 { font-size: 1.1rem; color: #1a3a2a; margin-bottom: 6px; }
+        .map-note { font-size: 0.82rem; color: #3a6a4a; line-height: 1.45; margin-bottom: 12px; }
+        .poi { display: flex; align-items: center; gap: 9px; padding: 7px 4px; font-size: 0.9rem; color: #1e2e24; cursor: pointer; border-bottom: 1px solid #f0f4ee; }
+        .poi:last-child { border-bottom: none; }
+        .poi:hover { background: #f6faf4; }
+        .poi input { accent-color: #1a3a2a; width: 16px; height: 16px; cursor: pointer; }
+        
+        /* Карточки */
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .card { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.06); border: 1px solid #dce8d8; transition: 0.25s; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(30,60,30,0.08); }
+        .card img { width: 100%; height: 190px; object-fit: cover; background: #d4e2ca; display: block; }
+        .card-body { padding: 18px 22px; }
+        .card-body h3 { font-size: 1.25rem; color: #1a3a2a; margin-bottom: 4px; }
+        .card-body .address { font-size: 0.9rem; color: #3a6a4a; margin-bottom: 8px; }
+        .card-body p { color: #2a4533; font-size: 0.95rem; }
+        .card.card-photo img { display: block; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
+        .card-photo .card-body { padding: 10px 15px; }
+        
+        .timeline { display: flex; flex-direction: column; gap: 20px; }
+        .timeline-item { background: #fff; border-radius: 16px; padding: 22px 28px; border-left: 6px solid #1a3a2a; box-shadow: 0 2px 10px rgba(0,0,0,0.04); transition: 0.2s; }
+        .timeline-item:hover { background: #f8fbf7; border-left-color: #b8d4a0; }
+        .timeline-item .year { font-weight: 700; font-size: 1.2rem; color: #1a3a2a; display: inline-block; background: #e2ede0; padding: 2px 16px; border-radius: 30px; margin-bottom: 6px; }
+        .timeline-item p { color: #2a4533; font-size: 1rem; margin-top: 4px; }
+        
+        .fact-card { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.06); border: 1px solid #dce8d8; transition: 0.25s; text-align: center; padding-bottom: 12px; }
+        .fact-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(30,60,30,0.08); }
+        .fact-card img { width: 100%; height: 180px; object-fit: cover; background: #d4e2ca; }
+        .fact-card .fact-label { padding: 14px 12px 6px; font-weight: 600; color: #1a3a2a; font-size: 0.95rem; line-height: 1.5; opacity: 0.9; }
+        
+        .hero-page {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('img/hero-bg.jpg') center/cover no-repeat;
+            min-height: 80vh; display: flex; align-items: center; justify-content: center; text-align: center; color: #fff; border-radius: 24px; padding: 40px 20px;
+        }
+        .hero-page h1 { font-size: 4rem; font-weight: 700; text-shadow: 0 4px 20px rgba(0,0,0,0.7); margin-bottom: 16px; }
+        .hero-page p { font-size: 1.4rem; max-width: 700px; margin: 0 auto 24px; opacity: 0.9; }
+        .hero-page .btn-hero { display: inline-block; background: #b8d4a0; color: #1a3a2a; padding: 14px 40px; border-radius: 50px; font-weight: 700; text-decoration: none; transition: 0.3s; font-size: 1.1rem; border: none; cursor: pointer; }
+        .hero-page .btn-hero:hover { background: #d0e8c0; transform: scale(1.04); }
+        
+        .creators-list { background: #fff; border-radius: 20px; padding: 40px 36px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); border: 1px solid #dce8d8; max-width: 700px; margin: 0 auto; }
+        .creators-list h1 { font-size: 2rem; color: #1a3a2a; margin-bottom: 20px; border-bottom: 2px solid #b8d4a0; padding-bottom: 12px; }
+        .creators-list p { font-size: 1.2rem; padding: 10px 0; border-bottom: 1px solid #e8f0e5; }
+        .creators-list p:last-child { border-bottom: none; }
+        .creators-list a { color: #1a3a2a; font-weight: 700; text-decoration: none; border-bottom: 2px solid #b8d4a0; transition: 0.2s; }
+        .creators-list a:hover { color: #2a5a3a; border-bottom-color: #2a5a3a; }
 
         @media (max-width: 900px) {
             .sidebar { width: 220px; padding: 20px 14px; }
             .main { margin-left: 220px; padding: 30px 20px; max-width: calc(100% - 220px); }
             .grid-3 { grid-template-columns: 1fr 1fr; }
-            .grid-4 { grid-template-columns: 1fr 1fr; }
             .hero-page h1 { font-size: 2.8rem; }
         }
         @media (max-width: 640px) {
-            .sidebar {
-                width: 100%;
-                position: relative;
-                height: auto;
-                padding: 16px;
-            }
-            .sidebar nav {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 6px;
-            }
-            .sidebar nav a {
-                padding: 8px 14px;
-                font-size: 0.9rem;
-                margin-bottom: 0;
-            }
+            .sidebar { width: 100%; position: relative; height: auto; padding: 16px; }
+            .sidebar nav { display: flex; flex-wrap: wrap; gap: 6px; }
+            .sidebar nav a { padding: 8px 14px; font-size: 0.9rem; margin-bottom: 0; }
             .sidebar h2 { margin-bottom: 16px; }
-            .sidebar .footer-small { display: none; }
-            .main {
-                margin-left: 0;
-                max-width: 100%;
-                padding: 20px 14px;
-            }
-            .grid-3, .grid-4 {
-                grid-template-columns: 1fr;
-            }
+            .sidebar-bottom { margin-top: 16px; padding-top: 0; }
+            .footer-small { display: none; }
+            .main { margin-left: 0; max-width: 100%; padding: 20px 14px; }
+            .grid-3 { grid-template-columns: 1fr; }
             .page-title { font-size: 1.8rem; }
             .timeline-item { padding: 16px 18px; }
             .hero-page h1 { font-size: 2.2rem; }
             .hero-page p { font-size: 1rem; }
+            .map-side { max-height: calc(100% - 150px); }
         }
     </style>
 </head>
-<body>
+<body data-view="home">
 
     <aside class="sidebar">
-        <h2>🏛️ <span>Вязьма</span></h2>
+        <h2><span>Вязьма</span></h2>
         <nav>
             <a href="#" class="active" data-page="home">Главная</a>
             <a href="#" data-page="attractions">Достопримечательности</a>
+            <a href="#" data-page="routes">Карта</a>
             <a href="#" data-page="history">История</a>
             <a href="#" data-page="facts">Интересные факты</a>
-            <a href="#" data-page="food">Где поесть</a>
-            <a href="#" data-page="souvenirs">Где купить сувениры</a>
-            <a href="#" data-page="creators">Создатели</a>
         </nav>
-        <div class="footer-small">© 2026 · Туризм Вязьма</div>
+        <div class="sidebar-bottom">
+            <a href="#" class="creators-link" data-page="creators">Создатели</a>
+            <div class="footer-small">© 2026 · Туризм Вязьма</div>
+        </div>
     </aside>
 
     <main class="main">
@@ -342,329 +203,218 @@
             <div class="hero-page">
                 <div>
                     <h1>Добро пожаловать в Вязьму</h1>
-                    <p>Город воинской славы, древняя крепость на Смоленской земле. Здесь переплелись вехи истории, от средневековых валов до современных культурных троп.</p>
+                    <p>Город воинской славы, древняя крепость на Смоленской земле. Здесь переплелись вехи истории — от средневековых валов до современных культурных троп.</p>
                     <a href="#" class="btn-hero" onclick="document.querySelector('[data-page=attractions]').click(); return false;">Изучить достопримечательности</a>
                 </div>
             </div>
         </section>
 
         <section class="page" id="page-attractions">
-            <h2 class="page-title">🏛️ Достопримечательности <small>Вязьмы</small></h2>
-            <div class="grid-3">
+            <h2 class="page-title">Достопримечательности <small>Вязьмы</small></h2>
+            <div class="grid-3 attractions-grid" id="attractions-grid">
+                <!-- (Карточки оставил как были) -->
+                <div class="card" data-key="a1"><img src="img/attraction-1.jpg" alt="Свято-Троицкий собор" /><div class="card-body"><h3>Свято-Троицкий собор</h3><div class="address">Нагорный переулок, 1</div><p>Главный храм города. Пятиглавый собор построен в 1676 году на месте более древнего храма и знаменит своим резным иконостасом.</p></div></div>
+                <div class="card" data-key="a2"><img src="img/attraction-2.jpg" alt="Иоанно-Предтеченский монастырь" /><div class="card-body"><h3>Иоанно-Предтеченский монастырь</h3><div class="address">ул. Докучаева, 48А</div><p>Основан в 1535 году — один из древнейших монастырей Смоленщины. Сейчас это действующая женская обитель.</p></div></div>
+                <div class="card" data-key="a3"><img src="img/attraction-3.jpg" alt="Краеведческий музей" /><div class="card-body"><h3>Краеведческий музей</h3><div class="address">пл. Советская, 3</div><p>Богатая экспозиция: археология, народный быт, история края и события Великой Отечественной войны.</p></div></div>
+                <div class="card" data-key="a4"><img src="img/attraction-4.jpg" alt="Памятник Перновскому полку" /><div class="card-body"><h3>Памятник Перновскому полку</h3><div class="address">пл. Советская</div><p>Обелиск в честь победы над армией Наполеона в 1812 году, установленный в память о воинах Перновского полка.</p></div></div>
+                <div class="card" data-key="a5"><img src="img/attraction-5.jpg" alt="Вечный огонь" /><div class="card-body"><h3>Вечный огонь</h3><div class="address">пл. Ефремова</div><p>Мемориал воинской славы, посвящённый героям Великой Отечественной войны. Зажжён в 2015 году.</p></div></div>
+                <div class="card" data-key="a6"><img src="img/attraction-6.jpg" alt="Сквер Карла Маркса" /><div class="card-body"><h3>Сквер Карла Маркса</h3><div class="address">ул. Парижской Коммуны / Страховой переулок</div><p>Уютный сквер в центре города для спокойных прогулок и отдыха.</p></div></div>
+                <div class="card" data-key="a7"><img src="img/attraction-7.jpg" alt="Церковь Преображения Господня" /><div class="card-body"><h3>Церковь Преображения Господня</h3><div class="address">Страховой переулок, 4</div><p>Старинный храм с красивым иконостасом и колокольней.</p></div></div>
+                <div class="card" data-key="a8"><img src="img/attraction-8.jpg" alt="Сквер Светланы Савицкой" /><div class="card-body"><h3>Сквер Светланы Савицкой</h3><div class="address">ул. 25 Октября</div><p>Большой сквер с самолётом МиГ-17 — любимое место отдыха горожан.</p></div></div>
+                <div class="card" data-key="a9"><img src="img/attraction-9.jpg" alt="Набережная реки Вязьмы" /><div class="card-body"><h3>Набережная реки Вязьмы</h3><div class="address">ул. Лейтенанта Шмидта</div><p>Живописная набережная для прогулок с видом на долину реки.</p></div></div>
+                <div class="card" data-key="a10"><img src="img/attraction-10.jpg" alt="Сквер Героям Первой мировой войны" /><div class="card-body"><h3>Сквер Героям Первой мировой войны</h3><div class="address">Сквер героев Первой мировой войны, Панино</div><p>Мемориальный сквер с памятником героям Первой мировой войны.</p></div></div>
+                <div class="card" data-key="a11"><img src="img/attraction-11.jpg" alt="Спасская башня" /><div class="card-body"><h3>Спасская башня</h3><div class="address">ул. Марины Расковой</div><p>Единственная уцелевшая башня Вяземской крепости — часть старинного крепостного вала.</p></div></div>
+                <div class="card" data-key="a12"><img src="img/attraction-12.jpg" alt="Центральный парк" /><div class="card-body"><h3>Центральный парк</h3><div class="address">Центр города</div><p>Главный городской парк для отдыха и семейных прогулок.</p></div></div>
+                <div class="card" data-key="a13"><img src="img/attraction-13.jpg" alt="Церковь иконы Божией Матери Одигитрия" /><div class="card-body"><h3>Церковь иконы Божией Матери Одигитрия</h3><div class="address">ул. Докучаева, 48А</div><p>Храм на территории Иоанно-Предтеченского монастыря: красивая архитектура и внутреннее убранство.</p></div></div>
+                <div class="card" data-key="a14"><img src="img/attraction-14.jpg" alt="Памятник Борису Годунову" /><div class="card-body"><h3>Памятник Борису Годунову</h3><div class="address">ул. Лейтенанта Шмидта (набережная)</div><p>Первый в России памятник Борису Фёдоровичу Годунову.</p></div></div>
+                <div class="card" data-key="a15"><img src="img/attraction-15.jpg" alt="Памятник генерал-лейтенанту Михаилу Ефремову" /><div class="card-body"><h3>Памятник генерал-лейтенанту Михаилу Ефремову</h3><div class="address">пл. Ефремова</div><p>Памятник увековечивает подвиг 33-й армии под командованием генерал-лейтенанта М. Г. Ефремова в 1942 году.</p></div></div>
 
-                <div class="card">
-                    <img src="img/attraction-1.jpg" alt="Свято-Троицкий собор" />
-                    <div class="card-body">
-                        <h3>Свято-Троицкий собор</h3>
-                        <div class="address">📍 Нагорный переулок, 1</div>
-                        <p>Главный храм города, построен в 1676 году. Пятиглавый собор с уникальным иконостасом.</p>
-                    </div>
+                <div class="card card-photo"><img src="img/BearArtSchool.jpg" alt="Арт-объект «Медведь»" loading="lazy" /><div class="card-body"><h3>Арт-объект «Медведь»</h3><div class="address">Художественная школа</div></div></div>
+                <div class="card card-photo"><img src="img/HeartRailwayStation.jpg" alt="Арт-объект «Сердце» у железнодорожного вокзала" loading="lazy" /><div class="card-body"><h3>Арт-объект «Сердце»</h3><div class="address">Железнодорожный вокзал</div></div></div>
+                <div class="card card-photo"><img src="img/foxMusicSchool.jpg" alt="Арт-объекты «Лисы»" loading="lazy" /><div class="card-body"><h3>Арт-объекты «Лисы»</h3><div class="address">Музыкальная школа</div></div></div>
+            </div>
+        </section>
+
+        <section class="page" id="page-routes">
+            <h2 class="page-title">Карта <small>маршрутов</small></h2>
+            <div class="map-container">
+                <div id="map"></div>
+                
+                <div class="map-controls">
+                    <button type="button" class="btn-primary" id="map-toggle" aria-expanded="false">Отмеченные места (10)</button>
+                    <button type="button" id="btn-zoom-in">+</button>
+                    <button type="button" id="btn-zoom-out">&minus;</button>
+                    <button type="button" id="btn-home">Вся Вязьма</button>
                 </div>
 
-                <div class="card">
-                    <img src="img/attraction-2.jpg" alt="Иоанно-Предтеченский монастырь" />
-                    <div class="card-body">
-                        <h3>Иоанно-Предтеченский монастырь</h3>
-                        <div class="address">📍 ул. Докучаева, 48А</div>
-                        <p>Основан в 1535 году. Один из древнейших монастырей Смоленщины.</p>
+                <div class="map-side" id="map-side">
+                    <h3>Достопримечательности</h3>
+                    <p class="map-note">Отметьте нужные места — они появятся на карте.</p>
+                    <div class="poi-list">
+                        <label class="poi"><input type="checkbox" data-key="a1" data-name="Свято-Троицкий собор" checked /><span>Свято-Троицкий собор</span></label>
+                        <label class="poi"><input type="checkbox" data-key="a11" data-name="Спасская башня" checked /><span>Спасская башня</span></label>
+                        <label class="poi"><input type="checkbox" data-key="a12" data-name="Центральный парк" checked /><span>Центральный парк</span></label>
+                        <label class="poi"><input type="checkbox" data-key="a3" data-name="Краеведческий музей" checked /><span>Краеведческий музей</span></label>
+                        <label class="poi"><input type="checkbox" data-key="a4" data-name="Памятник Перновскому полку" checked /><span>Памятник Перновскому полку</span></label>
+                        <label class="poi"><input type="checkbox" data-key="a9" data-name="Набережная реки Вязьмы" checked /><span>Набережная реки Вязьмы</span></label>
+                        <label class="poi"><input type="checkbox" data-key="a14" data-name="Памятник Борису Годунову" checked /><span>Памятник Борису Годунову</span></label>
+                        <label class="poi"><input type="checkbox" data-key="a5" data-name="Вечный огонь" checked /><span>Вечный огонь</span></label>
+                        <label class="poi"><input type="checkbox" data-key="a15" data-name="Памятник М. Г. Ефремову" checked /><span>Памятник М. Г. Ефремову</span></label>
+                        <label class="poi"><input type="checkbox" data-key="a8" data-name="Сквер Светланы Савицкой" checked /><span>Сквер Светланы Савицкой</span></label>
+                        <label class="poi"><input type="checkbox" data-key="a10" data-name="Сквер Героям Первой мировой" /><span>Сквер Героям Первой мировой</span></label>
+                        <label class="poi"><input type="checkbox" data-key="a6" data-name="Сквер Карла Маркса" /><span>Сквер Карла Маркса</span></label>
+                        <label class="poi"><input type="checkbox" data-key="a7" data-name="Церковь Преображения Господня" /><span>Церковь Преображения Господня</span></label>
+                        <label class="poi"><input type="checkbox" data-key="a2" data-name="Иоанно-Предтеченский монастырь" /><span>Иоанно-Предтеченский монастырь</span></label>
+                        <label class="poi"><input type="checkbox" data-key="a13" data-name="Церковь Одигитрия" /><span>Церковь Одигитрия</span></label>
                     </div>
                 </div>
-
-                <div class="card">
-                    <img src="img/attraction-3.jpg" alt="Краеведческий музей" />
-                    <div class="card-body">
-                        <h3>Краеведческий музей</h3>
-                        <div class="address">📍 Смоленская площадь, 3</div>
-                        <p>Богатая экспозиция: археология, быт, война, история края.</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <img src="img/attraction-4.jpg" alt="Памятник Перновскому полку" />
-                    <div class="card-body">
-                        <h3>Памятник Перновскому полку</h3>
-                        <div class="address">📍 Смоленская площадь, 3</div>
-                        <p>Обелиск в честь победы над армией Наполеона в 1812 году.</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <img src="img/attraction-5.jpg" alt="Вечный огонь" />
-                    <div class="card-body">
-                        <h3>Вечный огонь</h3>
-                        <div class="address">📍 Площадь Ефремова</div>
-                        <p>Мемориал воинской славы, посвящённый героям ВОВ.</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <img src="img/attraction-6.jpg" alt="Сквер Карла Маркса" />
-                    <div class="card-body">
-                        <h3>Сквер Карла Маркса</h3>
-                        <div class="address">📍 Парижской Коммуны / Страховой пер.</div>
-                        <p>Уютный сквер для спокойных прогулок и отдыха.</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <img src="img/attraction-7.jpg" alt="Церковь Преображения Господня" />
-                    <div class="card-body">
-                        <h3>Церковь Преображения Господня</h3>
-                        <div class="address">📍 Страховой переулок, 4</div>
-                        <p>Старинный храм с красивым иконостасом и колокольней.</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <img src="img/attraction-8.jpg" alt="Сквер Светланы Савицкой" />
-                    <div class="card-body">
-                        <h3>Сквер Светланы Савицкой</h3>
-                        <div class="address">📍 ул. 25-го Октября</div>
-                        <p>Большой сквер с МиГ-17. Любимое место горожан.</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <img src="img/attraction-9.jpg" alt="Набережная Вязьмы" />
-                    <div class="card-body">
-                        <h3>Набережная реки Вязьмы</h3>
-                        <div class="address">📍 ул. Лейтенанта Шмидта</div>
-                        <p>Живописная набережная для прогулок.</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <img src="img/attraction-10.jpg" alt="Сквер Героям Первой Мировой" />
-                    <div class="card-body">
-                        <h3>Сквер Героям Первой Мировой</h3>
-                        <div class="address">📍 сквер Героев Первой мировой войны</div>
-                        <p>Мемориал героям Первой мировой войны.</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <img src="img/attraction-11.jpg" alt="Спасская Башня" />
-                    <div class="card-body">
-                        <h3>Спасская Башня</h3>
-                        <div class="address">📍 Нагорный переулок, дом 2</div>
-                        <p>Единственная уцелевшая башня из 6, часть крепостного вала.</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <img src="img/attraction-12.jpg" alt="Городской парк" />
-                    <div class="card-body">
-                        <h3>Городской парк</h3>
-                        <div class="address">📍 Городской Парк</div>
-                        <p>Центральный парк для отдыха и семейных прогулок.</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <img src="img/attraction-13.jpg" alt="Церковь иконы Божией Матери Одигитрия" />
-                    <div class="card-body">
-                        <h3>Церковь иконы Божией Матери Одигитрия</h3>
-                        <div class="address">📍ул. Докучаева, 48А</div>
-                        <p>Красивая территория, архитектура здания и внутренняя отделка.</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <img src="img/attraction-14.jpg" alt="Памятник Борису Годунову" />
-                    <div class="card-body">
-                        <h3>Памятник Борису Годунову</h3>
-                        <div class="address">📍 Ул. Лейтенанта Шмидта (Набережная)</div>
-                        <p>Первый в России памятник Борису Фёдоровичу Годунову</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <img src="img/attraction-15.jpg" alt="Памятник генерал-лейтенанту Михаилу Ефремову" />
-                    <div class="card-body">
-                        <h3>Памятник генерал-лейтенанту Михаилу Ефремову</h3>
-                        <div class="address">📍 Площадь Ефремова</div>
-                        <p>Памятник Ефремову увековечивает его героический подвиг в боях за Вязьму в октябре 1942 года</p>
-                    </div>
-                </div>
-
             </div>
         </section>
 
         <section class="page" id="page-history">
-            <h2 class="page-title">📜 История <small>Вязьмы</small></h2>
+            <h2 class="page-title">История <small>Вязьмы</small></h2>
             <div class="timeline">
-
-                <div class="timeline-item">
-                    <div class="year">1239 год</div>
-                    <p>Первое летописное упоминание города. Передан в удел князю Андрею Владимировичу Долгой Руке, становится центром Вяземского удельного княжества в составе Смоленского княжества.</p>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="year">1403 год</div>
-                    <p>Захвачена Великим княжеством Литовским.</p>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="year">1493 год</div>
-                    <p>Возвращена Русскому государству в ходе русско-литовской войны.</p>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="year">XVI век</div>
-                    <p>Приписана к опричнине при Иване Грозном. Активно развиваются ремёсла (кожевенное производство) и торговля по Старой Смоленской дороге.</p>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="year">1632 год</div>
-                    <p>Построена каменная крепость с шестью башнями. Сохранилась Спасская башня. Город неоднократно подвергался польским набегам.</p>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="year">1654–1655 годы</div>
-                    <p>Временно становится «столицей» России: из‑за чумы в Москве здесь обосновался царь Алексей Михайлович с семьёй и патриархом Никоном.</p>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="year">1779 год</div>
-                    <p>Утверждён генеральный план развития города.</p>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="year">1780 год</div>
-                    <p>Городу присвоен герб.</p>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="year">XIX век</div>
-                    <p>Расцвет пряничного производства: в 1850 году действовало 8 пряничных фабрик (Сабельниковых, Ечеистовых, Кустаревых). В 1869 году открыта Александровская мужская гимназия — первое земское среднее учебное заведение в стране.</p>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="year">1870 год</div>
-                    <p>Через Вязьму прошла Московско‑Брестская железная дорога, что дало мощный толчок экономике.</p>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="year">1812 год</div>
-                    <p>22 октября русские войска нанесли поражение отступающей армии Наполеона. Город частично разрушен и подожжён при отступлении.</p>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="year">Октябрь 1941 года</div>
-                    <p>«Вяземский котёл»: в ходе оборонительной операции под Вязьмой в окружение попали значительные силы РККА. Город оккупирован немцами 7 октября.</p>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="year">Март 1943 года</div>
-                    <p>Освобождён в ходе Ржевско‑Вяземской операции. Город сильно разрушен, но позже восстановлен.</p>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="year">2009 год</div>
-                    <p>Присвоено почётное звание «Город воинской славы» за мужество защитников в годы Великой Отечественной войны.</p>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="year">Наши дни</div>
-                    <p>Вязьма — исторический город воинской славы, важный транспортный узел в области и центр культурного туризма.</p>
-                </div>
-
+                <div class="timeline-item"><div class="year">1239 год</div><p>Первое летописное упоминание города: Вязьма достаётся в удел князю Андрею Владимировичу Долгой Руке и становится центром Вяземского удельного княжества в составе Смоленской земли.</p></div>
+                <div class="timeline-item"><div class="year">1403 год</div><p>Войска великого князя литовского Витовта захватывают Вязьму и уводят в плен местного князя Симеона Мстиславича; город на долгое время входит в состав Великого княжества Литовского.</p></div>
+                <div class="timeline-item"><div class="year">1494 год</div><p>Вязьма возвращается в состав Русского государства по договору Ивана III и Александра Казимировича, заключённому после русско-литовской войны 1492–1494 годов.</p></div>
+                <div class="timeline-item"><div class="year">XVI век</div><p>При Иване Грозном Вязьма приписана к опричнине (1565). Активно развиваются ремёсла, в том числе кожевенное производство, и торговля по Старой Смоленской дороге.</p></div>
+                <div class="timeline-item"><div class="year">1632 год</div><p>Построена Вяземская крепость с шестью каменными башнями — она должна была защищать Смоленск. Город неоднократно отражал польские набеги.</p></div>
+                <div class="timeline-item"><div class="year">1654 год</div><p>Во время эпидемии чумы в Москве в Вязьме обосновался царь Алексей Михайлович с семьёй и патриархом Никоном. Около года город фактически выполнял роль столицы государства.</p></div>
+                <div class="timeline-item"><div class="year">1779 год</div><p>Утверждён генеральный план развития города.</p></div>
+                <div class="timeline-item"><div class="year">1780 год</div><p>10 октября Екатерина II утвердила герб Вязьмы вместе с гербами ещё одиннадцати уездных городов Смоленского наместничества.</p></div>
+                <div class="timeline-item"><div class="year">1812 год</div><p>22 октября у Вязьмы произошло сражение, в котором русские войска нанесли поражение отступающей армии Наполеона. При отступлении город сильно пострадал от разрушений и пожара.</p></div>
+                <div class="timeline-item"><div class="year">XIX век</div><p>Расцвет пряничного производства: в 1850 году в Вязьме действовало 8 пряничных фабрик, среди их владельцев — Сабельниковы, Ечеистовы и Кустаревы. В 1869 году открылась Александровская мужская гимназия — первое в России среднее учебное заведение, построенное на земские средства.</p></div>
+                <div class="timeline-item"><div class="year">1870 год</div><p>Через Вязьму прошла Московско-Смоленская железная дорога (часть будущей Московско-Брестской), что дало мощный толчок развитию экономики.</p></div>
+                <div class="timeline-item"><div class="year">Октябрь 1941 года</div><p>«Вяземский котёл»: в ходе оборонительной операции под Вязьмой в окружение попали значительные силы РККА. 7 октября город был оккупирован немецкими войсками.</p></div>
+                <div class="timeline-item"><div class="year">12 марта 1943 года</div><p>Вязьма освобождена в ходе Ржевско-Вяземской операции. Город был разрушен почти полностью, и впоследствии его отстроили заново.</p></div>
+                <div class="timeline-item"><div class="year">2009 год</div><p>За мужество защитников в годы Великой Отечественной войны Вязьме присвоено почётное звание «Город воинской славы».</p></div>
+                <div class="timeline-item"><div class="year">Наши дни</div><p>Вязьма — исторический город воинской славы, важный транспортный узел Смоленской области и центр культурного туризма.</p></div>
             </div>
         </section>
 
         <section class="page" id="page-facts">
-            <h2 class="page-title">💡 Интересные факты <small>о Вязьме</small></h2>
+            <h2 class="page-title">Интересные факты <small>о Вязьме</small></h2>
             <div class="grid-3">
-                <div class="fact-card">
-                    <img src="img/fact-1.jpg" alt="Вяземское княжество" />
-                    <div class="fact-label">В 1239 году образовано Вяземское княжество, отделившееся от Смоленского. Оно просуществовало до 1403 года.</div>
-                </div>
-                <div class="fact-card">
-                    <img src="img/fact-2.jpg" alt="Вязьма — столица Руси" />
-                    <div class="fact-label">В 1654 году Вязьма фактически была столицей Руси в течение 4 месяцев. Царь Алексей Михайлович жил здесь и издавал указы во время эпидемии чумы в Москве.</div>
-                </div>
-                <div class="fact-card">
-                    <img src="img/fact-3.jpg" alt="Вязьмичокъ" />
-                    <div class="fact-label">У Вязьмы есть неофициальный символ — «Вязьмичокъ», который олицетворяет дух и историю города.</div>
-                </div>
-                <div class="fact-card">
-                    <img src="img/fact-4.jpg" alt="Пряничная столица" />
-                    <div class="fact-label">В XIX веке Вязьма считалась пряничной столицей России. В 1850 году здесь работало 8 пряничных фабрик, а вяземский пряник поставляли даже к императорскому столу.</div>
-                </div>
-                <div class="fact-card">
-                    <img src="img/fact-5.jpg" alt="Железнодорожный узел" />
-                    <div class="fact-label">С 1870 года Вязьма стала крупным железнодорожным узлом. Через город прошла Московско-Брестская железная дорога, что дало мощный толчок развитию экономики.</div>
-                </div>
-                <div class="fact-card">
-                    <img src="img/fact-6.jpg" alt="Спасская башня" />
-                    <div class="fact-label">Спасская башня — единственная сохранившаяся из шести башен Вяземской крепости, построенной в 1632 году. Она является символом города.</div>
-                </div>
-                <div class="fact-card">
-                    <img src="img/fact-7.jpg" alt="Город воинской славы" />
-                    <div class="fact-label">В 2009 году Вязьме присвоено почётное звание «Город воинской славы» за мужество и героизм защитников в годы Великой Отечественной войны.</div>
-                </div>
-                <div class="fact-card">
-                    <img src="img/fact-8.jpg" alt="Вяземский котёл" />
-                    <div class="fact-label">В октябре 1941 года под Вязьмой произошла одна из самых трагических операций Великой Отечественной войны — «Вяземский котёл», где в окружение попали сотни тысяч советских солдат.</div>
-                </div>
-                <div class="fact-card">
-                    <img src="img/fact-9.jpg" alt="Туристический центр" />
-                    <div class="fact-label">Сегодня Вязьма — важный культурный регион Смоленщины. Сюда едут за историей, архитектурой и знаменитыми вяземскими пряниками.</div>
-                </div>
-            </div>
-        </section>
-
-        <section class="page" id="page-food">
-            <h2 class="page-title">🍴 Где поесть <small>в Вязьме</small></h2>
-            <div class="empty-block">
-                <h3>🍽️ Скоро здесь появится список кафе и ресторанов</h3>
-                <p>Мы собираем информацию о лучших местах Вязьмы.</p>
-            </div>
-        </section>
-
-        <section class="page" id="page-souvenirs">
-            <h2 class="page-title">🎁 Где купить сувениры <small>в Вязьме</small></h2>
-            <div class="empty-block">
-                <h3>🧳 Скоро здесь появятся сувенирные лавки и пряничные магазины</h3>
-                <p>Мы готовим подборку мест, где можно купить вяземский пряник и другие сувениры.</p>
+                <div class="fact-card"><img src="img/fact-1.jpg" alt="Вяземское княжество" /><div class="fact-label">В 1239 году Вязьма стала центром Вяземского княжества, выделившегося из Смоленского. Оно просуществовало до 1403 года.</div></div>
+                <div class="fact-card"><img src="img/fact-2.jpg" alt="Вязьма — столица Руси" /><div class="fact-label">В 1654 году Вязьма фактически была столицей Руси в течение четырёх месяцев. Царь Алексей Михайлович жил здесь и издавал указы во время эпидемии чумы в Москве.</div></div>
+                <div class="fact-card"><img src="img/fact-3.jpg" alt="Вязьмичокъ" /><div class="fact-label">У Вязьмы есть неофициальный символ — «Вязьмичокъ», который олицетворяет дух и историю города.</div></div>
+                <div class="fact-card"><img src="img/fact-4.jpg" alt="Пряничная столица" /><div class="fact-label">В XIX веке Вязьма считалась пряничной столицей России. В 1850 году здесь работало 8 пряничных фабрик, а вяземский пряник поставляли даже к императорскому столу.</div></div>
+                <div class="fact-card"><img src="img/fact-5.jpg" alt="Железнодорожный узел" /><div class="fact-label">С 1870 года Вязьма стала крупным железнодорожным узлом. Через город прошла Московско-Смоленская железная дорога, что дало мощный толчок развитию экономики.</div></div>
+                <div class="fact-card"><img src="img/fact-6.jpg" alt="Спасская башня" /><div class="fact-label">Спасская башня — единственная сохранившаяся из шести башен Вяземской крепости, построенной в 1632 году. Она является символом города.</div></div>
+                <div class="fact-card"><img src="img/fact-7.jpg" alt="Город воинской славы" /><div class="fact-label">В 2009 году Вязьме присвоено почётное звание «Город воинской славы» за мужество и героизм защитников в годы Великой Отечественной войны.</div></div>
+                <div class="fact-card"><img src="img/fact-8.jpg" alt="Вяземский котёл" /><div class="fact-label">В октябре 1941 года под Вязьмой произошла одна из самых трагических операций Великой Отечественной войны — «Вяземский котёл», в котором в окружение попали сотни тысяч советских солдат.</div></div>
+                <div class="fact-card"><img src="img/fact-9.jpg" alt="Туристический центр" /><div class="fact-label">Сегодня Вязьма — важный культурный центр Смоленщины. Сюда едут за историей, архитектурой и знаменитыми вяземскими пряниками.</div></div>
             </div>
         </section>
 
         <section class="page" id="page-creators">
-            <h2 class="page-title">👨‍💻 Создатели</h2>
+            <h2 class="page-title">Создатели</h2>
             <div class="creators-list">
-                <h1>Команда Кванториума Вязьмы:</h1>
-                <p><strong>Руководитель: Ромашкан Сергей</strong> </p>
-                <p><strong>Программист: Фотиев Виктор</strong> </p>
-                <p><strong>Идеи дизайна: Котова Алиса, Соловьёв Тимофей</strong> </p>
+                <h1>Команда Кванториума Вязьмы</h1>
+                <p><strong>Руководитель: Ромашкан Сергей</strong></p>
+                <p><strong>Программист: Фотиев Виктор</strong></p>
+                <p><strong>Идеи дизайна: Котова Алиса, Соловьёв Тимофей</strong></p>
                 <p style="margin-top:20px; border-bottom: none; font-size:1rem;">
-                    <a href="https://vk.com/kvantorium_vyazma" target="_blank">Кванториум</a> — это пространство, где мы учимся и создаём будущее.
+                    <a href="https://vk.com/kvantorium_vyazma" target="_blank" rel="noopener">Кванториум</a> — пространство, где мы учимся и создаём будущее.
                 </p>
             </div>
         </section>
 
     </main>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const navLinks = document.querySelectorAll('.sidebar nav a');
-            const pages = document.querySelectorAll('.page');
-
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const pageId = this.dataset.page;
-
-                    navLinks.forEach(l => l.classList.remove('active'));
-                    this.classList.add('active');
-
-                    pages.forEach(p => p.classList.remove('active'));
-                    const target = document.getElementById('page-' + pageId);
-                    if (target) target.classList.add('active');
+            var navLinks = document.querySelectorAll('.sidebar a[data-page]');
+            var pages = document.querySelectorAll('.page');
+            
+            function activatePage(pageId) {
+                navLinks.forEach(function(link) {
+                    link.classList.toggle('active', link.dataset.page === pageId);
                 });
+                pages.forEach(function(page) {
+                    page.classList.toggle('active', page.id === 'page-' + pageId);
+                });
+                document.body.dataset.view = pageId;
+            }
+
+            navLinks.forEach(function(link) {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    activatePage(this.dataset.page);
+                });
+            });
+
+            var PINS = {
+                a1:  [55.212186, 34.287225], a2:  [55.206829, 34.272147], a3:  [55.210244, 34.283611],
+                a4:  [55.210600, 34.284795], a5:  [55.210923, 34.292487], a6:  [55.210820, 34.296439],
+                a7:  [55.210830, 34.297561], a8:  [55.207559, 34.290958], a9:  [55.208577, 34.289341],
+                a10: [55.198247, 34.314487], a11: [55.212472, 34.290858], a12: [55.210471, 34.287821],
+                a13: [55.206829, 34.272147], a14: [55.206912, 34.291603], a15: [55.211147, 34.293431]
+            };
+
+            var map = L.map('map', { zoomControl: false }).setView([55.208, 34.292], 13);
+            
+            // Стандартные тайлы OpenStreetMap (без ключей и блокировок благодаря meta referrer)
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            var markers = {};
+
+            function updateMarkers() {
+                for (var key in markers) { map.removeLayer(markers[key]); }
+                markers = {};
+                
+                var checkedCount = 0;
+                var bounds = L.latLngBounds();
+
+                document.querySelectorAll('.poi input[data-key]').forEach(function(input) {
+                    if (input.checked) {
+                        checkedCount++;
+                        var key = input.dataset.key;
+                        var latLng = PINS[key];
+                        if (latLng) {
+                            var marker = L.marker(latLng).addTo(map).bindPopup('<b>' + input.dataset.name + '</b>');
+                            markers[key] = marker;
+                            bounds.extend(latLng);
+                        }
+                    }
+                });
+
+                document.getElementById('map-toggle').textContent = 'Отмеченные места (' + checkedCount + ')';
+                return bounds;
+            }
+
+            var toggleBtn = document.getElementById('map-toggle');
+            var sidePanel = document.getElementById('map-side');
+            
+            toggleBtn.addEventListener('click', function() {
+                var isOpen = sidePanel.classList.toggle('is-open');
+                toggleBtn.setAttribute('aria-expanded', isOpen);
+            });
+
+            document.querySelectorAll('.poi input[data-key]').forEach(function(input) {
+                input.addEventListener('change', updateMarkers);
+            });
+
+            document.getElementById('btn-zoom-in').addEventListener('click', function() { map.zoomIn(); });
+            document.getElementById('btn-zoom-out').addEventListener('click', function() { map.zoomOut(); });
+            document.getElementById('btn-home').addEventListener('click', function() {
+                map.flyTo([55.208, 34.292], 13);
+            });
+
+            updateMarkers();
+
+            document.querySelector('a[data-page="routes"]').addEventListener('click', function() {
+                setTimeout(function() {
+                    map.invalidateSize();
+                    var bounds = updateMarkers();
+                    if (bounds.isValid()) map.fitBounds(bounds, { padding: [50, 50] });
+                }, 200);
             });
         });
     </script>
-
 </body>
 </html>
