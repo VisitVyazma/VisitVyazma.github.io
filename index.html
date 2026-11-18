@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -5,15 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Вязьма — гид по городу</title>
     <meta name="description" content="Вязьма: история города, достопримечательности, карта маршрутов и интересные факты." />
-    
-    <!-- Этот тег решает проблему с блокировкой карт при локальном просмотре -->
-    <meta name="referrer" content="no-referrer" />
-    
     <link rel="icon" href="img/logo.png" type="image/png" />
-    
-    <!-- Стили Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
+    <!-- Подключаем Mapbox GL JS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet" />
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -24,14 +21,6 @@
             min-height: 100vh;
         }
         .sidebar {
-            width: 280px;
-            background: #1a3a2a;
-            color: #e0e8dd;
-            padding: 30px 20px;
-            position: fixed;
-            top: 0; left: 0; bottom: 0;
-            overflow-y: auto;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
             z-index: 10;
             display: flex;
             flex-direction: column;
@@ -69,27 +58,10 @@
 
         /* Кнопки поверх карты */
         .map-controls {
-            position: absolute;
-            z-index: 1000;
-            top: 16px;
-            left: 16px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
+            position: absolute; z-index: 1000; top: 16px; left: 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
         }
         .map-controls button {
-            border: none;
-            border-radius: 10px;
-            padding: 10px 14px;
-            background: #fff;
-            color: #1a3a2a;
-            font-family: inherit;
-            font-size: 0.88rem;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            transition: 0.2s;
+            border: none; border-radius: 10px; padding: 10px 14px; background: #fff; color: #1a3a2a; font-family: inherit; font-size: 0.88rem; font-weight: 600; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: 0.2s;
         }
         .map-controls button:hover { background: #eef5ec; }
         .map-controls .btn-primary { background: #1a3a2a; color: #fff; }
@@ -97,18 +69,7 @@
         .map-controls .btn-primary[aria-expanded="true"] { background: #b8d4a0; color: #1a3a2a; }
 
         .map-side {
-            position: absolute;
-            z-index: 1000;
-            top: 70px;
-            right: 16px;
-            width: min(330px, calc(100% - 32px));
-            max-height: calc(100% - 140px);
-            overflow-y: auto;
-            padding: 18px;
-            background: #fff;
-            border-radius: 14px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-            display: none;
+            position: absolute; z-index: 1000; top: 70px; right: 16px; width: min(330px, calc(100% - 32px)); max-height: calc(100% - 140px); overflow-y: auto; padding: 18px; background: #fff; border-radius: 14px; box-shadow: 0 8px 30px rgba(0,0,0,0.25); display: none;
         }
         .map-side.is-open { display: block; }
         .map-side h3 { font-size: 1.1rem; color: #1a3a2a; margin-bottom: 6px; }
@@ -212,7 +173,6 @@
         <section class="page" id="page-attractions">
             <h2 class="page-title">Достопримечательности <small>Вязьмы</small></h2>
             <div class="grid-3 attractions-grid" id="attractions-grid">
-                <!-- (Карточки оставил как были) -->
                 <div class="card" data-key="a1"><img src="img/attraction-1.jpg" alt="Свято-Троицкий собор" /><div class="card-body"><h3>Свято-Троицкий собор</h3><div class="address">Нагорный переулок, 1</div><p>Главный храм города. Пятиглавый собор построен в 1676 году на месте более древнего храма и знаменит своим резным иконостасом.</p></div></div>
                 <div class="card" data-key="a2"><img src="img/attraction-2.jpg" alt="Иоанно-Предтеченский монастырь" /><div class="card-body"><h3>Иоанно-Предтеченский монастырь</h3><div class="address">ул. Докучаева, 48А</div><p>Основан в 1535 году — один из древнейших монастырей Смоленщины. Сейчас это действующая женская обитель.</p></div></div>
                 <div class="card" data-key="a3"><img src="img/attraction-3.jpg" alt="Краеведческий музей" /><div class="card-body"><h3>Краеведческий музей</h3><div class="address">пл. Советская, 3</div><p>Богатая экспозиция: археология, народный быт, история края и события Великой Отечественной войны.</p></div></div>
@@ -322,63 +282,119 @@
 
     </main>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Подключаем Mapbox GL JS -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var navLinks = document.querySelectorAll('.sidebar a[data-page]');
             var pages = document.querySelectorAll('.page');
             
             function activatePage(pageId) {
-                navLinks.forEach(function(link) {
-                    link.classList.toggle('active', link.dataset.page === pageId);
-                });
-                pages.forEach(function(page) {
-                    page.classList.toggle('active', page.id === 'page-' + pageId);
-                });
+                navLinks.forEach(function(link) { link.classList.toggle('active', link.dataset.page === pageId); });
+                pages.forEach(function(page) { page.classList.toggle('active', page.id === 'page-' + pageId); });
                 document.body.dataset.view = pageId;
             }
 
             navLinks.forEach(function(link) {
-                link.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    activatePage(this.dataset.page);
-                });
+                link.addEventListener('click', function(event) { event.preventDefault(); activatePage(this.dataset.page); });
             });
 
+            // Координаты выверены по внешним источникам:
+            //  a5 «Вечный огонь», a15 «М.Г. Ефремову», a4 «Перновскому полку», a8 «Сквер Светланы Савицкой» (самолёт МиГ-17) — OpenStreetMap;
+            //  a14 «Памятник Борису Годунову» — Яндекс.Карты (набережная, ул. Лейтенанта Шмидта).
             var PINS = {
-                a1:  [55.212186, 34.287225], a2:  [55.206829, 34.272147], a3:  [55.210244, 34.283611],
-                a4:  [55.210600, 34.284795], a5:  [55.210923, 34.292487], a6:  [55.210820, 34.296439],
-                a7:  [55.210830, 34.297561], a8:  [55.207559, 34.290958], a9:  [55.208577, 34.289341],
+                a1: [55.212186, 34.287225], a2: [55.206829, 34.272147], a3: [55.210244, 34.283611],
+                a4: [55.210589, 34.283746], a5: [55.210498, 34.291255], a6: [55.210820, 34.296439],
+                a7: [55.210830, 34.297561], a8: [55.201168, 34.300494], a9: [55.208577, 34.289341],
                 a10: [55.198247, 34.314487], a11: [55.212472, 34.290858], a12: [55.210471, 34.287821],
-                a13: [55.206829, 34.272147], a14: [55.206912, 34.291603], a15: [55.211147, 34.293431]
+                a13: [55.206829, 34.272147], a14: [55.208987, 34.287830], a15: [55.210813, 34.291218]
             };
 
-            var map = L.map('map', { zoomControl: false }).setView([55.208, 34.292], 13);
-            
-            // Стандартные тайлы OpenStreetMap (без ключей и блокировок благодаря meta referrer)
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
+            mapboxgl.accessToken = 'pk.eyJ1IjoidmZnc29mdHdhcmUiLCJhIjoiY213bThsdXU2MDMzbjJ5czlzdjRjcnQ1NSJ9.lvPZgqPOokVuoRn0SB1uTQ';
 
-            var markers = {};
+            // Инициализация карты с 3D-наклоном
+            var map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/streets-v12', 
+                center: [34.292, 55.208], 
+                zoom: 16, // Приближаем, чтобы были видны дома
+                pitch: 60, // Наклон для 3D
+                bearing: -20, // Поворот для объема
+                attributionControl: false
+            });
+
+            // Добавляем контролы для вращения и зума
+            map.addControl(new mapboxgl.NavigationControl({ showCompass: true }), 'top-right');
+            map.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right');
+
+            // Включаем 3D-здания при загрузке стиля
+            map.on('style.load', function () {
+                var layers = map.getStyle().layers;
+                var labelLayerId;
+                for (var i = 0; i < layers.length; i++) {
+                    if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
+                        labelLayerId = layers[i].id;
+                        break;
+                    }
+                }
+
+                map.addLayer({
+                    'id': '3d-buildings',
+                    'source': 'composite',
+                    'source-layer': 'building',
+                    'filter': ['==', 'extrude', 'true'],
+                    'type': 'fill-extrusion',
+                    'minzoom': 14,
+                    'paint': {
+                        'fill-extrusion-color': '#a5b8a0', // Цвет зданий в тон вашего сайта
+                        'fill-extrusion-height': [
+                            'interpolate', ['linear'], ['zoom'],
+                            14, 0,
+                            14.05, ['get', 'height']
+                        ],
+                        'fill-extrusion-base': [
+                            'interpolate', ['linear'], ['zoom'],
+                            14, 0,
+                            14.05, ['get', 'min_height']
+                        ],
+                        'fill-extrusion-opacity': 0.85
+                    }
+                }, labelLayerId);
+            });
+
+            var markers = [];
 
             function updateMarkers() {
-                for (var key in markers) { map.removeLayer(markers[key]); }
-                markers = {};
+                markers.forEach(function(m) { m.remove(); });
+                markers = [];
                 
                 var checkedCount = 0;
-                var bounds = L.latLngBounds();
+                var bounds = new mapboxgl.LngLatBounds();
 
                 document.querySelectorAll('.poi input[data-key]').forEach(function(input) {
                     if (input.checked) {
                         checkedCount++;
                         var key = input.dataset.key;
-                        var latLng = PINS[key];
-                        if (latLng) {
-                            var marker = L.marker(latLng).addTo(map).bindPopup('<b>' + input.dataset.name + '</b>');
-                            markers[key] = marker;
-                            bounds.extend(latLng);
+                        var coords = PINS[key];
+                        if (coords) {
+                            var lngLat = [coords[1], coords[0]];
+                            
+                            var el = document.createElement('div');
+                            el.style.width = '20px';
+                            el.style.height = '20px';
+                            el.style.backgroundColor = '#1a3a2a';
+                            el.style.border = '3px solid #b8d4a0';
+                            el.style.borderRadius = '50%';
+                            el.style.cursor = 'pointer';
+                            el.style.boxShadow = '0 2px 6px rgba(0,0,0,0.4)';
+                            
+                            var marker = new mapboxgl.Marker(el)
+                                .setLngLat(lngLat)
+                                .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML('<b>' + input.dataset.name + '</b>'))
+                                .addTo(map);
+                            
+                            markers.push(marker);
+                            bounds.extend(lngLat);
                         }
                     }
                 });
@@ -396,23 +412,33 @@
             });
 
             document.querySelectorAll('.poi input[data-key]').forEach(function(input) {
-                input.addEventListener('change', updateMarkers);
+                input.addEventListener('change', function() { updateMarkers(); });
             });
 
             document.getElementById('btn-zoom-in').addEventListener('click', function() { map.zoomIn(); });
             document.getElementById('btn-zoom-out').addEventListener('click', function() { map.zoomOut(); });
+            
+            // Кнопка "Вся Вязьма" сбрасывает на 3D-обзор
             document.getElementById('btn-home').addEventListener('click', function() {
-                map.flyTo([55.208, 34.292], 13);
+                map.flyTo({ 
+                    center: [34.292, 55.208], 
+                    zoom: 16, 
+                    pitch: 60,
+                    bearing: -20
+                });
             });
 
-            updateMarkers();
-
+            // При переходе на вкладку карты корректируем её размер
             document.querySelector('a[data-page="routes"]').addEventListener('click', function() {
                 setTimeout(function() {
-                    map.invalidateSize();
-                    var bounds = updateMarkers();
-                    if (bounds.isValid()) map.fitBounds(bounds, { padding: [50, 50] });
+                    map.resize();
+                    // НЕ используем fitBounds, чтобы не сбивать 3D-наклон
+                    updateMarkers();
                 }, 200);
+            });
+
+            map.on('load', function() {
+                updateMarkers();
             });
         });
     </script>
